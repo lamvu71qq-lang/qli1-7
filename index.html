@@ -6,41 +6,55 @@
     <title>Hệ Thống Quản Lý Kho Tài Khoản</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Khởi tạo chế độ Dark Mode ngay khi tải trang để tránh bị giật màn hình trắng
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-200">
 
-    <div id="loginScreen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+    <div id="loginScreen" class="fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-750 relative">
+            
+            <button onclick="toggleTheme()" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-blue-500 p-2 rounded-lg cursor-pointer" title="Thay đổi giao diện">
+                <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+                <i class="fa-solid fa-sun hidden dark:block text-lg text-yellow-400"></i>
+            </button>
+
             <div class="text-center mb-6">
-                <i class="fa-solid fa-lock text-4xl text-blue-600 mb-2"></i>
-                <h2 class="text-2xl font-bold text-gray-800">HỆ THỐNG KHO ACC</h2>
-                <p class="text-gray-500 text-sm mt-1">Đăng nhập quyền Admin để chỉnh sửa hoặc truy cập với quyền xem</p>
+                <i class="fa-solid fa-lock text-4xl text-blue-600 dark:text-blue-500 mb-2"></i>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">HỆ THỐNG KHO ACC</h2>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Đăng nhập Admin để chỉnh sửa hoặc vào xem với quyền Khách</p>
             </div>
             
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-600 mb-1">Tài khoản</label>
-                    <input type="text" id="loginUser" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Tài khoản</label>
+                    <input type="text" id="loginUser" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-600 mb-1">Mật khẩu</label>
-                    <input type="password" id="loginPass" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Mật khẩu</label>
+                    <input type="password" id="loginPass" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent">
                 </div>
                 <div id="loginError" class="text-red-500 text-sm hidden text-center font-medium">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không chính xác!
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không đúng!
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer shadow-md">
                     <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập Quyền Admin
                 </button>
             </form>
             
             <div class="relative flex py-4 items-center">
-                <div class="flex-grow border-t border-gray-200"></div>
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
                 <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase">Hoặc</span>
-                <div class="flex-grow border-t border-gray-200"></div>
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
             </div>
             
-            <button id="btnGuest" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg transition cursor-pointer text-center block">
+            <button id="btnGuest" class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2 rounded-lg transition cursor-pointer text-center block">
                 <i class="fa-solid fa-eye mr-1"></i> Truy Cập Quyền Xem (Khách)
             </button>
         </div>
@@ -48,56 +62,63 @@
 
 
     <div class="max-w-6xl mx-auto px-4 py-8">
-        <header class="mb-8 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm gap-4">
+        <header class="mb-8 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-transparent dark:border-gray-750 gap-4">
             <div class="text-center sm:text-left">
-                <h1 class="text-2xl font-bold text-gray-800">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
                     <i class="fa-solid fa-cloud text-blue-500 mr-2"></i>KHO ACC DATABASE ĐÁM MÂY
                 </h1>
-                <p class="text-gray-500 text-sm mt-0.5">Dữ liệu đồng bộ Realtime trực tuyến</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Dữ liệu đồng bộ Realtime trực tuyến</p>
             </div>
-            <div class="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-lg border">
-                <span id="roleBadge" class="text-sm font-semibold px-2.5 py-0.5 rounded"></span>
-                <button id="btnLogout" class="text-gray-500 hover:text-red-600 text-sm transition cursor-pointer" title="Đăng xuất">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="bg-gray-100 dark:bg-gray-750 text-gray-600 dark:text-gray-300 p-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:text-blue-500 transition cursor-pointer" title="Thay đổi giao diện">
+                    <i class="fa-solid fa-moon dark:hidden mr-1"></i><span class="dark:hidden text-sm">Tối</span>
+                    <i class="fa-solid fa-sun hidden dark:inline mr-1 text-yellow-400"></i><span class="hidden dark:inline text-sm">Sáng</span>
                 </button>
+
+                <div class="flex items-center gap-3 bg-gray-100 dark:bg-gray-750 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <span id="roleBadge" class="text-sm font-semibold px-2.5 py-0.5 rounded"></span>
+                    <button id="btnLogout" class="text-gray-500 dark:text-gray-400 hover:text-red-600 text-sm transition cursor-pointer" title="Đăng xuất">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div id="adminFormContainer" class="hidden bg-white p-6 rounded-xl shadow-md h-fit">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+            <div id="adminFormContainer" class="hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-transparent dark:border-gray-750 h-fit">
+                <h2 class="text-xl font-semibold text-gray-700 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
                     <i class="fa-solid fa-user-plus text-green-500 mr-2"></i>Thêm Tài Khoản Mới
                 </h2>
                 <form id="accForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Loại tài khoản</label>
-                        <input type="text" id="accType" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Loại tài khoản</label>
+                        <input type="text" id="accType" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Tên đăng nhập / Email</label>
-                        <input type="text" id="accUser" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Tên đăng nhập / Email</label>
+                        <input type="text" id="accUser" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Mật khẩu</label>
-                        <input type="text" id="accPass" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Mật khẩu</label>
+                        <input type="text" id="accPass" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Ghi chú thêm</label>
-                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Hạn dùng, giá tiền..."></textarea>
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Ghi chú thêm</label>
+                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white" placeholder="Hạn dùng, cookies, giá..."></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer shadow-md">
                         <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Tải Lên Firebase
                     </button>
                 </form>
             </div>
 
-            <div id="tableContainer" class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b pb-4 gap-4">
-                    <h2 class="text-xl font-semibold text-gray-700">
+            <div id="tableContainer" class="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-transparent dark:border-gray-750">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-4 gap-4">
+                    <h2 class="text-xl font-semibold text-gray-700 dark:text-white">
                         <i class="fa-solid fa-list text-purple-500 mr-2"></i>Kho Lưu Trữ Trực Tuyến
                     </h2>
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Tìm kiếm nhanh..." class="w-full pl-9 pr-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" id="searchBar" placeholder="Tìm kiếm nhanh..." class="w-full pl-9 pr-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                     </div>
                 </div>
@@ -105,7 +126,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm uppercase font-semibold">
+                            <tr class="bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm uppercase font-semibold">
                                 <th class="p-3">Loại</th>
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
@@ -113,7 +134,7 @@
                                 <th id="thAction" class="p-3 text-center hidden">Xóa</th>
                             </tr>
                         </thead>
-                        <tbody id="accTableBody" class="text-gray-700 text-sm divide-y divide-gray-100">
+                        <tbody id="accTableBody" class="text-gray-700 dark:text-gray-200 text-sm divide-y divide-gray-100 dark:divide-gray-700">
                             </tbody>
                     </table>
                 </div>
@@ -125,6 +146,18 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -145,10 +178,10 @@
         const database = getDatabase(app);
         const dbRef = ref(database, 'accounts'); 
 
-        // Các biến phân quyền hệ thống
-        let currentRole = localStorage.getItem('userRole') || null; // 'admin' hoặc 'guest'
+        // Biến phân quyền
+        let currentRole = localStorage.getItem('userRole') || null;
 
-        // DOM Elements tuyển chọn
+        // DOM Elements
         const loginScreen = document.getElementById('loginScreen');
         const loginForm = document.getElementById('loginForm');
         const btnGuest = document.getElementById('btnGuest');
@@ -164,7 +197,7 @@
 
         let localDataCache = [];
 
-        // 🛠️ XỬ LÝ ĐĂNG NHẬP / KIỂM TRA QUYỀN
+        // Kiểm tra phiên và phân quyền người dùng
         function checkAuth() {
             if (currentRole === 'admin') {
                 loginScreen.classList.add('hidden');
@@ -173,7 +206,7 @@
                 tableContainer.classList.add('lg:col-span-2');
                 thAction.classList.remove('hidden');
                 
-                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-red-100 text-red-800";
+                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
                 roleBadge.innerHTML = `<i class="fa-solid fa-user-shield mr-1"></i> Admin`;
             } else if (currentRole === 'guest') {
                 loginScreen.classList.add('hidden');
@@ -182,33 +215,32 @@
                 tableContainer.classList.add('lg:col-span-3');
                 thAction.classList.add('hidden');
                 
-                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-gray-200 text-gray-700";
+                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
                 roleBadge.innerHTML = `<i class="fa-solid fa-user mr-1"></i> Khách (Chỉ xem)`;
             } else {
                 loginScreen.classList.remove('hidden');
             }
         }
 
-        // Sự kiện Submit đăng nhập Admin
+        // Sự kiện Đăng nhập Admin
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('loginUser').value;
             const pass = document.getElementById('loginPass').value;
 
-            // KIỂM TRA TÀI KHOẢN ADMIN MẶC ĐỊNH
             if (user === "gbao08" && pass === "Gbao0088!?") {
                 currentRole = 'admin';
                 localStorage.setItem('userRole', 'admin');
                 loginError.classList.add('hidden');
                 loginForm.reset();
                 checkAuth();
-                renderData(localDataCache); // Vẽ lại bảng để cập nhật nút xóa nếu có
+                renderData(localDataCache);
             } else {
                 loginError.classList.remove('hidden');
             }
         });
 
-        // Sự kiện Vào quyền khách
+        // Sự kiện Đăng nhập Khách
         btnGuest.addEventListener('click', () => {
             currentRole = 'guest';
             localStorage.setItem('userRole', 'guest');
@@ -223,8 +255,7 @@
             checkAuth();
         });
 
-
-        // 🛠️ LẮNG NGHE DỮ LIỆU REALTIME TỪ FIREBASE
+        // LẮNG NGHE DỮ LIỆU ĐỒNG BỘ REALTIME
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localDataCache = [];
@@ -236,7 +267,7 @@
             renderData(localDataCache);
         });
 
-        // Hàm render bảng dữ liệu
+        // Hàm render dữ liệu ra bảng
         function renderData(dataToRender) {
             accTableBody.innerHTML = '';
             
@@ -249,28 +280,26 @@
 
             dataToRender.forEach((acc) => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition";
+                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-750 transition duration-150";
                 
-                // Cột hành động xóa chỉ hiển thị code HTML nút xóa khi role là Admin
                 const actionCell = currentRole === 'admin' 
                     ? `<td class="p-3 text-center">
-                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 p-1 transition cursor-pointer">
+                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 transition cursor-pointer">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                        </td>` 
                     : '';
 
                 tr.innerHTML = `
-                    <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${escapeHtml(acc.type)}</span></td>
+                    <td class="p-3"><span class="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-semibold px-2.5 py-0.5 rounded">${escapeHtml(acc.type)}</span></td>
                     <td class="p-3 font-medium">${escapeHtml(acc.user)}</td>
-                    <td class="p-3 font-mono">${escapeHtml(acc.pass)}</td>
-                    <td class="p-3 text-gray-500 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
+                    <td class="p-3 font-mono text-blue-600 dark:text-blue-400">${escapeHtml(acc.pass)}</td>
+                    <td class="p-3 text-gray-500 dark:text-gray-400 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
                     ${actionCell}
                 `;
                 accTableBody.appendChild(tr);
             });
 
-            // Gán sự kiện xóa cho Admin
             if(currentRole === 'admin') {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', function() {
@@ -283,7 +312,7 @@
             }
         }
 
-        // 🛠️ THÊM TÀI KHOẢN (Chỉ kích hoạt khi nhấn submit từ form admin)
+        // Thêm tài khoản mới (Chỉ Admin)
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if (currentRole !== 'admin') {
@@ -300,11 +329,11 @@
             }).then(() => {
                 document.getElementById('accForm').reset();
             }).catch((error) => {
-                alert("Lỗi tải lên: " + error.message);
+                alert("Lỗi khi đẩy dữ liệu: " + error.message);
             });
         });
 
-        // 🛠️ TÌM KIẾM NHANH
+        // Tìm kiếm nhanh
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localDataCache.filter(acc => 
@@ -320,7 +349,7 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Chạy kiểm tra phiên làm việc ngay khi load trang
+        // Chạy kiểm tra đăng nhập ngay khi mở trang
         checkAuth();
     </script>
 </body>
