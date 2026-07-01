@@ -3,28 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Kho Tài Khoản - Firebase Cloud</title>
+    <title>Hệ Thống Quản Lý Kho Tài Khoản</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 font-sans antialiased">
 
+    <div id="loginScreen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-lock text-4xl text-blue-600 mb-2"></i>
+                <h2 class="text-2xl font-bold text-gray-800">HỆ THỐNG KHO ACC</h2>
+                <p class="text-gray-500 text-sm mt-1">Đăng nhập quyền Admin để chỉnh sửa hoặc truy cập với quyền xem</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Tài khoản</label>
+                    <input type="text" id="loginUser" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Mật khẩu</label>
+                    <input type="password" id="loginPass" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div id="loginError" class="text-red-500 text-sm hidden text-center font-medium">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không chính xác!
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập Quyền Admin
+                </button>
+            </form>
+            
+            <div class="relative flex py-4 items-center">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase">Hoặc</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+            
+            <button id="btnGuest" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg transition cursor-pointer text-center block">
+                <i class="fa-solid fa-eye mr-1"></i> Truy Cập Quyền Xem (Khách)
+            </button>
+        </div>
+    </div>
+
+
     <div class="max-w-6xl mx-auto px-4 py-8">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-800">
-                <i class="fa-solid fa-cloud text-blue-500 mr-2"></i>KHO ACC DATABASE ĐÁM MÂY
-            </h1>
-            <p class="text-gray-500 mt-2">Dữ liệu đồng bộ Realtime trực tuyến qua Firebase Cloud</p>
+        <header class="mb-8 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm gap-4">
+            <div class="text-center sm:text-left">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fa-solid fa-cloud text-blue-500 mr-2"></i>KHO ACC DATABASE ĐÁM MÂY
+                </h1>
+                <p class="text-gray-500 text-sm mt-0.5">Dữ liệu đồng bộ Realtime trực tuyến</p>
+            </div>
+            <div class="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-lg border">
+                <span id="roleBadge" class="text-sm font-semibold px-2.5 py-0.5 rounded"></span>
+                <button id="btnLogout" class="text-gray-500 hover:text-red-600 text-sm transition cursor-pointer" title="Đăng xuất">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-md h-fit">
+            <div id="adminFormContainer" class="hidden bg-white p-6 rounded-xl shadow-md h-fit">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                    <i class="fa-solid fa-user-plus text-green-500 mr-2"></i>Thêm Tài Khoản
+                    <i class="fa-solid fa-user-plus text-green-500 mr-2"></i>Thêm Tài Khoản Mới
                 </h2>
                 <form id="accForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">Loại tài khoản (Ví dụ: Netflix, Facebook...)</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Loại tài khoản</label>
                         <input type="text" id="accType" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
@@ -37,15 +83,15 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">Ghi chú thêm</label>
-                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Hạn dùng, cookies, giá tiền..."></textarea>
+                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Hạn dùng, giá tiền..."></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition duration-200 cursor-pointer">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer">
                         <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Tải Lên Firebase
                     </button>
                 </form>
             </div>
 
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+            <div id="tableContainer" class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b pb-4 gap-4">
                     <h2 class="text-xl font-semibold text-gray-700">
                         <i class="fa-solid fa-list text-purple-500 mr-2"></i>Kho Lưu Trữ Trực Tuyến
@@ -64,7 +110,7 @@
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
                                 <th class="p-3">Ghi chú</th>
-                                <th class="p-3 text-center">Xóa</th>
+                                <th id="thAction" class="p-3 text-center hidden">Xóa</th>
                             </tr>
                         </thead>
                         <tbody id="accTableBody" class="text-gray-700 text-sm divide-y divide-gray-100">
@@ -74,18 +120,17 @@
                 
                 <div id="emptyState" class="text-center py-8 text-gray-400">
                     <i class="fa-solid fa-spinner fa-spin text-4xl mb-2 block text-blue-500"></i>
-                    Đang kết nối database hoặc kho dữ liệu đang trống...
+                    Đang tải dữ liệu đám mây...
                 </div>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Import các hàm cần thiết từ Firebase CDN dành cho ứng dụng tĩnh
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Cấu hình Firebase chính xác từ tài khoản của bạn
+        // Cấu hình Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyCcD_AORL2MJmgGt46H_vZp8-eQsLI3GaA",
             authDomain: "qli-kho-ec.firebaseapp.com",
@@ -96,44 +141,107 @@
             appId: "1:16758389298:web:cf9146040236db9e459a2b"
         };
 
-        // Khởi tạo ứng dụng Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        
-        // Tạo thư mục (Node) lưu trữ dữ liệu chính tên là 'accounts'
         const dbRef = ref(database, 'accounts'); 
 
-        // DOM Elements tuyển chọn từ giao diện
-        const accForm = document.getElementById('accForm');
+        // Các biến phân quyền hệ thống
+        let currentRole = localStorage.getItem('userRole') || null; // 'admin' hoặc 'guest'
+
+        // DOM Elements tuyển chọn
+        const loginScreen = document.getElementById('loginScreen');
+        const loginForm = document.getElementById('loginForm');
+        const btnGuest = document.getElementById('btnGuest');
+        const loginError = document.getElementById('loginError');
+        const roleBadge = document.getElementById('roleBadge');
+        const btnLogout = document.getElementById('btnLogout');
+        const adminFormContainer = document.getElementById('adminFormContainer');
+        const tableContainer = document.getElementById('tableContainer');
+        const thAction = document.getElementById('thAction');
         const accTableBody = document.getElementById('accTableBody');
         const emptyState = document.getElementById('emptyState');
         const searchBar = document.getElementById('searchBar');
 
-        let localDataCache = []; // Mảng tạm lưu dữ liệu tải từ đám mây về để tìm kiếm offline
+        let localDataCache = [];
 
-        // 🛠️ 1. LẮNG NGHE DỮ LIỆU ĐỒNG BỘ REALTIME TỪ FIREBASE
+        // 🛠️ XỬ LÝ ĐĂNG NHẬP / KIỂM TRA QUYỀN
+        function checkAuth() {
+            if (currentRole === 'admin') {
+                loginScreen.classList.add('hidden');
+                adminFormContainer.classList.remove('hidden');
+                tableContainer.classList.remove('lg:col-span-3');
+                tableContainer.classList.add('lg:col-span-2');
+                thAction.classList.remove('hidden');
+                
+                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-red-100 text-red-800";
+                roleBadge.innerHTML = `<i class="fa-solid fa-user-shield mr-1"></i> Admin`;
+            } else if (currentRole === 'guest') {
+                loginScreen.classList.add('hidden');
+                adminFormContainer.classList.add('hidden');
+                tableContainer.classList.remove('lg:col-span-2');
+                tableContainer.classList.add('lg:col-span-3');
+                thAction.classList.add('hidden');
+                
+                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-gray-200 text-gray-700";
+                roleBadge.innerHTML = `<i class="fa-solid fa-user mr-1"></i> Khách (Chỉ xem)`;
+            } else {
+                loginScreen.classList.remove('hidden');
+            }
+        }
+
+        // Sự kiện Submit đăng nhập Admin
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+
+            // KIỂM TRA TÀI KHOẢN ADMIN MẶC ĐỊNH
+            if (user === "gbao08" && pass === "Gbao0088!?") {
+                currentRole = 'admin';
+                localStorage.setItem('userRole', 'admin');
+                loginError.classList.add('hidden');
+                loginForm.reset();
+                checkAuth();
+                renderData(localDataCache); // Vẽ lại bảng để cập nhật nút xóa nếu có
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // Sự kiện Vào quyền khách
+        btnGuest.addEventListener('click', () => {
+            currentRole = 'guest';
+            localStorage.setItem('userRole', 'guest');
+            checkAuth();
+            renderData(localDataCache);
+        });
+
+        // Đăng xuất
+        btnLogout.addEventListener('click', () => {
+            currentRole = null;
+            localStorage.removeItem('userRole');
+            checkAuth();
+        });
+
+
+        // 🛠️ LẮNG NGHE DỮ LIỆU REALTIME TỪ FIREBASE
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localDataCache = [];
-            
             if (data) {
-                // Duyệt Object trả về từ Firebase và chuyển đổi thành Mảng (Array) dữ liệu
                 Object.keys(data).forEach(key => {
-                    localDataCache.push({
-                        id: key,
-                        ...data[key]
-                    });
+                    localDataCache.push({ id: key, ...data[key] });
                 });
             }
             renderData(localDataCache);
         });
 
-        // Hàm vẽ giao diện bảng dữ liệu
+        // Hàm render bảng dữ liệu
         function renderData(dataToRender) {
             accTableBody.innerHTML = '';
             
             if (dataToRender.length === 0) {
-                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-4xl mb-2 block"></i> Kho tài khoản hiện tại đang trống.`;
+                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-4xl mb-2 block"></i> Kho tài khoản trống.`;
                 emptyState.classList.remove('hidden');
                 return;
             }
@@ -142,49 +250,61 @@
             dataToRender.forEach((acc) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
+                
+                // Cột hành động xóa chỉ hiển thị code HTML nút xóa khi role là Admin
+                const actionCell = currentRole === 'admin' 
+                    ? `<td class="p-3 text-center">
+                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 p-1 transition cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                       </td>` 
+                    : '';
+
                 tr.innerHTML = `
                     <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${escapeHtml(acc.type)}</span></td>
                     <td class="p-3 font-medium">${escapeHtml(acc.user)}</td>
                     <td class="p-3 font-mono">${escapeHtml(acc.pass)}</td>
                     <td class="p-3 text-gray-500 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
-                    <td class="p-3 text-center">
-                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 p-1 transition cursor-pointer" title="Xóa tài khoản">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
+                    ${actionCell}
                 `;
                 accTableBody.appendChild(tr);
             });
 
-            // Gán sự kiện cho các nút Xóa vừa mới được hiển thị
-            document.querySelectorAll('.btn-delete').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    if(confirm('Bạn chắc chắn muốn xóa tài khoản này khỏi hệ thống Cloud chứ?')) {
-                        remove(ref(database, 'accounts/' + id));
-                    }
+            // Gán sự kiện xóa cho Admin
+            if(currentRole === 'admin') {
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        if(confirm('Bạn chắc chắn muốn xóa tài khoản này khỏi Cloud?')) {
+                            remove(ref(database, 'accounts/' + id));
+                        }
+                    });
                 });
-            });
+            }
         }
 
-        // 🛠️ 2. THÊM TÀI KHOẢN MỚI LÊN ĐÁM MÂY
-        accForm.addEventListener('submit', (e) => {
+        // 🛠️ THÊM TÀI KHOẢN (Chỉ kích hoạt khi nhấn submit từ form admin)
+        document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            if (currentRole !== 'admin') {
+                alert("Bạn không có quyền thực hiện hành động này!");
+                return;
+            }
             
-            const newAccRef = push(dbRef); // Firebase tự động sinh ra một mã ID không trùng lặp
+            const newAccRef = push(dbRef);
             set(newAccRef, {
                 type: document.getElementById('accType').value,
                 user: document.getElementById('accUser').value,
                 pass: document.getElementById('accPass').value,
                 note: document.getElementById('accNote').value
             }).then(() => {
-                accForm.reset(); // Làm trống form sau khi đẩy dữ liệu thành công
+                document.getElementById('accForm').reset();
             }).catch((error) => {
-                alert("Lỗi khi đồng bộ lên hệ thống đám mây: " + error.message);
+                alert("Lỗi tải lên: " + error.message);
             });
         });
 
-        // 🛠️ 3. TÌM KIẾM TÀI KHOẢN NHANH TRÊN MÁY TRẠM
+        // 🛠️ TÌM KIẾM NHANH
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localDataCache.filter(acc => 
@@ -195,11 +315,13 @@
             renderData(filtered);
         });
 
-        // Tiện ích chống lỗi hiển thị html độc hại (XSS)
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
+
+        // Chạy kiểm tra phiên làm việc ngay khi load trang
+        checkAuth();
     </script>
 </body>
 </html>
