@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Kho Tài Khoản - Firebase Cloud</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fa-solid fa-cloud text-blue-500 mr-2"></i>KHO ACC DATABASE ĐÁM MÂY
+            </h1>
+            <p class="text-gray-500 mt-2">Dữ liệu đồng bộ Realtime trực tuyến qua Firebase Cloud</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-md h-fit">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                    <i class="fa-solid fa-user-plus text-green-500 mr-2"></i>Thêm Tài Khoản
+                </h2>
+                <form id="accForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Loại tài khoản (Ví dụ: Netflix, Facebook...)</label>
+                        <input type="text" id="accType" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Tên đăng nhập / Email</label>
+                        <input type="text" id="accUser" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Mật khẩu</label>
+                        <input type="text" id="accPass" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Ghi chú thêm</label>
+                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Hạn dùng, cookies, giá tiền..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition duration-200 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Tải Lên Firebase
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b pb-4 gap-4">
+                    <h2 class="text-xl font-semibold text-gray-700">
+                        <i class="fa-solid fa-list text-purple-500 mr-2"></i>Kho Lưu Trữ Trực Tuyến
+                    </h2>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="searchBar" placeholder="Tìm kiếm nhanh..." class="w-full pl-9 pr-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm uppercase font-semibold">
+                                <th class="p-3">Loại</th>
+                                <th class="p-3">Tài khoản</th>
+                                <th class="p-3">Mật khẩu</th>
+                                <th class="p-3">Ghi chú</th>
+                                <th class="p-3 text-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accTableBody" class="text-gray-700 text-sm divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyState" class="text-center py-8 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-4xl mb-2 block text-blue-500"></i>
+                    Đang kết nối database hoặc kho dữ liệu đang trống...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import các hàm cần thiết từ Firebase CDN dành cho ứng dụng tĩnh
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Cấu hình Firebase chính xác từ tài khoản của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcD_AORL2MJmgGt46H_vZp8-eQsLI3GaA",
+            authDomain: "qli-kho-ec.firebaseapp.com",
+            databaseURL: "https://qli-kho-ec-default-rtdb.firebaseio.com",
+            projectId: "qli-kho-ec",
+            storageBucket: "qli-kho-ec.firebasestorage.app",
+            messagingSenderId: "16758389298",
+            appId: "1:16758389298:web:cf9146040236db9e459a2b"
+        };
+
+        // Khởi tạo ứng dụng Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Tạo thư mục (Node) lưu trữ dữ liệu chính tên là 'accounts'
+        const dbRef = ref(database, 'accounts'); 
+
+        // DOM Elements tuyển chọn từ giao diện
+        const accForm = document.getElementById('accForm');
+        const accTableBody = document.getElementById('accTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const searchBar = document.getElementById('searchBar');
+
+        let localDataCache = []; // Mảng tạm lưu dữ liệu tải từ đám mây về để tìm kiếm offline
+
+        // 🛠️ 1. LẮNG NGHE DỮ LIỆU ĐỒNG BỘ REALTIME TỪ FIREBASE
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            localDataCache = [];
+            
+            if (data) {
+                // Duyệt Object trả về từ Firebase và chuyển đổi thành Mảng (Array) dữ liệu
+                Object.keys(data).forEach(key => {
+                    localDataCache.push({
+                        id: key,
+                        ...data[key]
+                    });
+                });
+            }
+            renderData(localDataCache);
+        });
+
+        // Hàm vẽ giao diện bảng dữ liệu
+        function renderData(dataToRender) {
+            accTableBody.innerHTML = '';
+            
+            if (dataToRender.length === 0) {
+                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-4xl mb-2 block"></i> Kho tài khoản hiện tại đang trống.`;
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            dataToRender.forEach((acc) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">${escapeHtml(acc.type)}</span></td>
+                    <td class="p-3 font-medium">${escapeHtml(acc.user)}</td>
+                    <td class="p-3 font-mono">${escapeHtml(acc.pass)}</td>
+                    <td class="p-3 text-gray-500 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
+                    <td class="p-3 text-center">
+                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 p-1 transition cursor-pointer" title="Xóa tài khoản">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                accTableBody.appendChild(tr);
+            });
+
+            // Gán sự kiện cho các nút Xóa vừa mới được hiển thị
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    if(confirm('Bạn chắc chắn muốn xóa tài khoản này khỏi hệ thống Cloud chứ?')) {
+                        remove(ref(database, 'accounts/' + id));
+                    }
+                });
+            });
+        }
+
+        // 🛠️ 2. THÊM TÀI KHOẢN MỚI LÊN ĐÁM MÂY
+        accForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newAccRef = push(dbRef); // Firebase tự động sinh ra một mã ID không trùng lặp
+            set(newAccRef, {
+                type: document.getElementById('accType').value,
+                user: document.getElementById('accUser').value,
+                pass: document.getElementById('accPass').value,
+                note: document.getElementById('accNote').value
+            }).then(() => {
+                accForm.reset(); // Làm trống form sau khi đẩy dữ liệu thành công
+            }).catch((error) => {
+                alert("Lỗi khi đồng bộ lên hệ thống đám mây: " + error.message);
+            });
+        });
+
+        // 🛠️ 3. TÌM KIẾM TÀI KHOẢN NHANH TRÊN MÁY TRẠM
+        searchBar.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = localDataCache.filter(acc => 
+                acc.type.toLowerCase().includes(keyword) || 
+                acc.user.toLowerCase().includes(keyword) ||
+                (acc.note && acc.note.toLowerCase().includes(keyword))
+            );
+            renderData(filtered);
+        });
+
+        // Tiện ích chống lỗi hiển thị html độc hại (XSS)
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
