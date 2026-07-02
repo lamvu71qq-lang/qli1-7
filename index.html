@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -101,21 +101,15 @@
                 <form id="accForm" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên đăng nhập / Tài khoản</label>
-                        <input type="text" id="accUser" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="accUser" required placeholder="Nhập tài khoản" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu</label>
-                        <input type="text" id="accPass" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="accPass" required placeholder="Nhập mật khẩu" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Khoảng số lượng MP</label>
-                        <select id="accMp" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
-                            <option value="10-21M MP">10 - 21M MP</option>
-                            <option value="21-40M MP">21 - 40M MP</option>
-                            <option value="41-60M MP">41 - 60M MP</option>
-                            <option value="61-80M MP">61 - 80M MP</option>
-                            <option value="81-100M MP">81 - 100M MP</option>
-                        </select>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số lượng / Thông tin MP (Tự nhập)</label>
+                        <input type="text" id="accMp" required placeholder="Ví dụ: 82M MP, 10-21M MP..." class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
                         Đồng Bộ Lên Kho & Báo Bot
@@ -130,7 +124,7 @@
                         <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
                     </div>
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Tìm nhanh theo TK hoặc khoảng MP..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="searchBar" placeholder="Gõ tìm nhanh (Ví dụ: 10-21)..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     </div>
                 </div>
@@ -141,7 +135,7 @@
                             <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
-                                <th class="p-3">Khoảng MP</th>
+                                <th class="p-3">Thông tin MP</th>
                                 <th class="p-3 text-center">Xuất</th>
                             </tr>
                         </thead>
@@ -392,9 +386,9 @@
                 tr.innerHTML = `
                     <td class="p-3 text-gray-900 dark:text-gray-100 font-semibold">${escapeHtml(acc.user)}</td>
                     <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
-                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || '10-21M MP')}</span></td>
+                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || 'Chưa ghi chú')}</span></td>
                     <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || '10-21M MP')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
+                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
                             <i class="fa-solid fa-box-open"></i>
                         </button>
                     </td>
@@ -413,10 +407,10 @@
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             
-                            const msg = `📤 *THÔNG BÁO TỪ ADMIN: ${currentUserName.toUpperCase()}*\n` +
+                            const msg = `📤 *THÔNG BÁO TỪ ADMIN/QTV: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
-                                        `💎 *Khoảng MP:* ${accMp}\n` +
+                                        `💎 *Thông tin MP:* ${accMp}\n` +
                                         `📉 *Số lượng còn lại trong kho:* \`${currentRemain}\` acc.`;
                             sendTelegramNotification(msg);
                         });
@@ -425,24 +419,24 @@
             });
         }
 
-        // 📥 LOGIC UP ACC (CHỈ CẦN TK MK VÀ CHỌN KHOẢNG MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
+        // 📥 LOGIC UP ACC (TỰ NHẬP TAY SỐ LƯỢNG MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
             const user = document.getElementById('accUser').value.trim();
             const pass = document.getElementById('accPass').value.trim();
-            const mp = document.getElementById('accMp').value;
+            const mp = document.getElementById('accMp').value.trim();
 
             const newAccRef = push(dbRef);
             set(newAccRef, { user, pass, mp }).then(() => {
                 document.getElementById('accForm').reset();
                 const currentTotal = localAccCache.length + 1;
                 
-                const msg = `📥 *THÔNG BÁO TỪ ADMIN: ${currentUserName.toUpperCase()}*\n` +
+                const msg = `📥 *THÔNG BÁO TỪ ADMIN/QTV: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
                             `🔑 *Mật khẩu:* \`${pass}\`\n` +
-                            `💎 *Khoảng MP:* ${mp}\n` +
+                            `💎 *Thông tin MP:* ${mp}\n` +
                             `📈 *Tổng số lượng trong kho:* \`${currentTotal}\` acc.`;
                 sendTelegramNotification(msg);
             });
@@ -508,6 +502,7 @@
             });
         });
 
+        // BỘ LỌC TÌM KIẾM THEO TẤT CẢ TỪ KHÓA TRONG KHO (Ví dụ gõ 10-21, 82M...)
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localAccCache.filter(acc => 
