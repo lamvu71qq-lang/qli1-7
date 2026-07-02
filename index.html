@@ -1,13 +1,35 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Kho Tài Khoản</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kho Tài Khoản Cloud App</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kho Acc">
+    
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Tối ưu hóa trải nghiệm vuốt chạm chuẩn App di động */
+        body {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+        input, textarea {
+            user-select: text;
+        }
+        /* Giấu thanh cuộn nhưng vẫn cuộn được */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    
     <script>
-        // Khởi tạo chế độ Dark Mode ngay khi tải trang để tránh bị giật màn hình trắng
+        // Khởi tạo chế độ Dark Mode
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -15,118 +37,124 @@
         }
     </script>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-200">
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-24 md:pb-8 transition-colors duration-200">
 
-    <div id="loginScreen" class="fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-750 relative">
+    <div id="loginScreen" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xl flex items-center justify-center z-50 p-4 transition-all duration-300">
+        <div class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl w-full max-w-md border border-white/20 relative scale-100 transition-transform">
             
-            <button onclick="toggleTheme()" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-blue-500 p-2 rounded-lg cursor-pointer" title="Thay đổi giao diện">
-                <i class="fa-solid fa-moon dark:hidden text-lg"></i>
-                <i class="fa-solid fa-sun hidden dark:block text-lg text-yellow-400"></i>
+            <button onclick="toggleTheme()" class="absolute top-5 right-5 text-gray-500 dark:text-gray-400 hover:text-blue-500 p-2 rounded-full bg-gray-100 dark:bg-gray-800 w-10 h-10 flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-moon dark:hidden text-base"></i>
+                <i class="fa-solid fa-sun hidden dark:block text-base text-yellow-400"></i>
             </button>
 
-            <div class="text-center mb-6">
-                <i class="fa-solid fa-lock text-4xl text-blue-600 dark:text-blue-500 mb-2"></i>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">HỆ THỐNG KHO ACC</h2>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Đăng nhập Admin để chỉnh sửa hoặc vào xem với quyền Khách</p>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-600 dark:bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-vault text-2xl text-white"></i>
+                </div>
+                <h2 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">Kho Acc Cloud</h2>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Hệ thống quản lý mật khẩu tối ưu</p>
             </div>
             
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Tài khoản</label>
-                    <input type="text" id="loginUser" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Tài khoản</label>
+                    <input type="text" id="loginUser" class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-950 transition">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Mật khẩu</label>
-                    <input type="password" id="loginPass" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Mật khẩu</label>
+                    <input type="password" id="loginPass" class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-950 transition">
                 </div>
                 <div id="loginError" class="text-red-500 text-sm hidden text-center font-medium">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không đúng!
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Sai tài khoản hoặc mật khẩu!
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer shadow-md">
-                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập Quyền Admin
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold py-3 rounded-xl transition duration-150 cursor-pointer shadow-lg shadow-blue-500/20">
+                    Đăng Nhập Admin
                 </button>
             </form>
             
-            <div class="relative flex py-4 items-center">
-                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase">Hoặc</span>
-                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+            <div class="relative flex py-5 items-center">
+                <div class="flex-grow border-t border-gray-100 dark:border-gray-800"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-xs font-bold uppercase tracking-widest">Hoặc</span>
+                <div class="flex-grow border-t border-gray-100 dark:border-gray-800"></div>
             </div>
             
-            <button id="btnGuest" class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2 rounded-lg transition cursor-pointer text-center block">
-                <i class="fa-solid fa-eye mr-1"></i> Truy Cập Quyền Xem (Khách)
+            <button id="btnGuest" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-750 active:scale-[0.98] text-gray-700 dark:text-gray-200 font-semibold py-3 rounded-xl transition cursor-pointer text-center block">
+                Truy Cập Quyền Xem
             </button>
         </div>
     </div>
 
+    <div id="pwaInstallBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-5 py-3 rounded-2xl shadow-2xl z-40 flex items-center gap-4 border border-blue-400 max-w-sm w-[90%] animate-bounce">
+        <i class="fa-solid fa-mobile-screen-button text-xl"></i>
+        <div class="flex-grow text-xs">
+            <p class="font-bold">Cài đặt ứng dụng về máy</p>
+            <p class="opacity-80">Trải nghiệm mượt mà, xịn xò hơn!</p>
+        </div>
+        <button id="btnInstallPWA" class="bg-white text-blue-600 font-bold text-xs px-3 py-1.5 rounded-xl cursor-pointer active:scale-95 transition">Cài Đặt</button>
+    </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <header class="mb-8 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-transparent dark:border-gray-750 gap-4">
-            <div class="text-center sm:text-left">
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
-                    <i class="fa-solid fa-cloud text-blue-500 mr-2"></i>KHO ACC DATABASE ĐÁM MÂY
+    <div class="max-w-6xl mx-auto px-4 pt-6">
+        <header class="mb-6 flex justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
+            <div>
+                <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-circle text-xs text-green-500 mr-2 animate-pulse"></i>KHO ACC LIVE
                 </h1>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Dữ liệu đồng bộ Realtime trực tuyến</p>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="toggleTheme()" class="bg-gray-100 dark:bg-gray-750 text-gray-600 dark:text-gray-300 p-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:text-blue-500 transition cursor-pointer" title="Thay đổi giao diện">
-                    <i class="fa-solid fa-moon dark:hidden mr-1"></i><span class="dark:hidden text-sm">Tối</span>
-                    <i class="fa-solid fa-sun hidden dark:inline mr-1 text-yellow-400"></i><span class="hidden dark:inline text-sm">Sáng</span>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTheme()" class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 p-2.5 rounded-xl hover:text-blue-500 transition cursor-pointer border border-gray-100 dark:border-gray-900">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-yellow-400"></i>
                 </button>
-
-                <div class="flex items-center gap-3 bg-gray-100 dark:bg-gray-750 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <span id="roleBadge" class="text-sm font-semibold px-2.5 py-0.5 rounded"></span>
-                    <button id="btnLogout" class="text-gray-500 dark:text-gray-400 hover:text-red-600 text-sm transition cursor-pointer" title="Đăng xuất">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-gray-900">
+                    <span id="roleBadge" class="text-xs font-bold px-2 py-0.5 rounded-lg"></span>
+                    <button id="btnLogout" class="text-gray-400 hover:text-red-500 transition cursor-pointer text-sm p-1">
+                        <i class="fa-solid fa-power-off"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div id="adminFormContainer" class="hidden bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-transparent dark:border-gray-750 h-fit">
-                <h2 class="text-xl font-semibold text-gray-700 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
-                    <i class="fa-solid fa-user-plus text-green-500 mr-2"></i>Thêm Tài Khoản Mới
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="adminFormContainer" class="hidden bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <i class="fa-solid fa-circle-plus text-green-500 mr-2"></i>Thêm Mới Acc
                 </h2>
                 <form id="accForm" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Loại tài khoản</label>
-                        <input type="text" id="accType" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loại tài khoản</label>
+                        <input type="text" id="accType" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Tên đăng nhập / Email</label>
-                        <input type="text" id="accUser" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên đăng nhập</label>
+                        <input type="text" id="accUser" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Mật khẩu</label>
-                        <input type="text" id="accPass" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu</label>
+                        <input type="text" id="accPass" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Ghi chú thêm</label>
-                        <textarea id="accNote" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white" placeholder="Hạn dùng, cookies, giá..."></textarea>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ghi chú bổ sung</label>
+                        <textarea id="accNote" rows="2" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Hạn dùng, cookies..."></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition cursor-pointer shadow-md">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Tải Lên Firebase
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
+                        Đồng Bộ Lên Cloud
                     </button>
                 </form>
             </div>
 
-            <div id="tableContainer" class="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-transparent dark:border-gray-750">
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-4 gap-4">
-                    <h2 class="text-xl font-semibold text-gray-700 dark:text-white">
-                        <i class="fa-solid fa-list text-purple-500 mr-2"></i>Kho Lưu Trữ Trực Tuyến
-                    </h2>
+            <div id="tableContainer" class="lg:col-span-3 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">Kho Cơ Sở Dữ Liệu</h2>
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Tìm kiếm nhanh..." class="w-full pl-9 pr-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-transparent text-gray-800 dark:text-white">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        <input type="text" id="searchBar" placeholder="Tìm nhanh tài khoản..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm uppercase font-semibold">
+                            <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
                                 <th class="p-3">Loại</th>
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
@@ -134,17 +162,32 @@
                                 <th id="thAction" class="p-3 text-center hidden">Xóa</th>
                             </tr>
                         </thead>
-                        <tbody id="accTableBody" class="text-gray-700 dark:text-gray-200 text-sm divide-y divide-gray-100 dark:divide-gray-700">
+                        <tbody id="accTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium">
                             </tbody>
                     </table>
                 </div>
                 
-                <div id="emptyState" class="text-center py-8 text-gray-400">
-                    <i class="fa-solid fa-spinner fa-spin text-4xl mb-2 block text-blue-500"></i>
-                    Đang tải dữ liệu đám mây...
+                <div id="emptyState" class="text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i>
+                    Đang kết nối Cloud...
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="md:hidden fixed bottom-0 inset-x-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 py-2 px-6 flex justify-around items-center z-30 shadow-xl">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-blue-500 cursor-pointer">
+            <i class="fa-solid fa-house-chimney text-lg"></i>
+            <span class="text-[10px] font-bold">Trang chủ</span>
+        </button>
+        <button onclick="document.getElementById('searchBar').focus()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 cursor-pointer">
+            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            <span class="text-[10px] font-bold">Tìm kiếm</span>
+        </button>
+        <button onclick="toggleTheme()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 cursor-pointer">
+            <i class="fa-solid fa-circle-half-stroke text-lg"></i>
+            <span class="text-[10px] font-bold">Giao diện</span>
+        </button>
     </div>
 
     <script>
@@ -163,7 +206,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Cấu hình Firebase của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyCcD_AORL2MJmgGt46H_vZp8-eQsLI3GaA",
             authDomain: "qli-kho-ec.firebaseapp.com",
@@ -178,10 +220,8 @@
         const database = getDatabase(app);
         const dbRef = ref(database, 'accounts'); 
 
-        // Biến phân quyền
         let currentRole = localStorage.getItem('userRole') || null;
 
-        // DOM Elements
         const loginScreen = document.getElementById('loginScreen');
         const loginForm = document.getElementById('loginForm');
         const btnGuest = document.getElementById('btnGuest');
@@ -197,38 +237,34 @@
 
         let localDataCache = [];
 
-        // Kiểm tra phiên và phân quyền người dùng
         function checkAuth() {
             if (currentRole === 'admin') {
-                loginScreen.classList.add('hidden');
+                loginScreen.style.opacity = '0';
+                setTimeout(() => loginScreen.classList.add('hidden'), 300);
                 adminFormContainer.classList.remove('hidden');
                 tableContainer.classList.remove('lg:col-span-3');
                 tableContainer.classList.add('lg:col-span-2');
                 thAction.classList.remove('hidden');
-                
-                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-                roleBadge.innerHTML = `<i class="fa-solid fa-user-shield mr-1"></i> Admin`;
+                roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/40";
+                roleBadge.innerHTML = `Admin`;
             } else if (currentRole === 'guest') {
-                loginScreen.classList.add('hidden');
+                loginScreen.style.opacity = '0';
+                setTimeout(() => loginScreen.classList.add('hidden'), 300);
                 adminFormContainer.classList.add('hidden');
                 tableContainer.classList.remove('lg:col-span-2');
                 tableContainer.classList.add('lg:col-span-3');
                 thAction.classList.add('hidden');
-                
-                roleBadge.className = "text-sm font-semibold px-2.5 py-0.5 rounded bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
-                roleBadge.innerHTML = `<i class="fa-solid fa-user mr-1"></i> Khách (Chỉ xem)`;
+                roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700";
+                roleBadge.innerHTML = `Khách`;
             } else {
                 loginScreen.classList.remove('hidden');
+                setTimeout(() => loginScreen.style.opacity = '1', 50);
             }
         }
 
-        // Sự kiện Đăng nhập Admin
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const user = document.getElementById('loginUser').value;
-            const pass = document.getElementById('loginPass').value;
-
-            if (user === "gbao08" && pass === "Gbao0088!?") {
+            if (document.getElementById('loginUser').value === "gbao08" && document.getElementById('loginPass').value === "Gbao0088!?") {
                 currentRole = 'admin';
                 localStorage.setItem('userRole', 'admin');
                 loginError.classList.add('hidden');
@@ -240,7 +276,6 @@
             }
         });
 
-        // Sự kiện Đăng nhập Khách
         btnGuest.addEventListener('click', () => {
             currentRole = 'guest';
             localStorage.setItem('userRole', 'guest');
@@ -248,14 +283,12 @@
             renderData(localDataCache);
         });
 
-        // Đăng xuất
         btnLogout.addEventListener('click', () => {
             currentRole = null;
             localStorage.removeItem('userRole');
             checkAuth();
         });
 
-        // LẮNG NGHE DỮ LIỆU ĐỒNG BỘ REALTIME
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localDataCache = [];
@@ -267,12 +300,10 @@
             renderData(localDataCache);
         });
 
-        // Hàm render dữ liệu ra bảng
         function renderData(dataToRender) {
             accTableBody.innerHTML = '';
-            
             if (dataToRender.length === 0) {
-                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-4xl mb-2 block"></i> Kho tài khoản trống.`;
+                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-3xl mb-2 block"></i> Kho rỗng.`;
                 emptyState.classList.remove('hidden');
                 return;
             }
@@ -280,20 +311,20 @@
 
             dataToRender.forEach((acc) => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-750 transition duration-150";
+                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-850/40 transition duration-100";
                 
                 const actionCell = currentRole === 'admin' 
                     ? `<td class="p-3 text-center">
-                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1 transition cursor-pointer">
+                        <button data-id="${acc.id}" class="btn-delete text-red-500 hover:text-red-700 p-1 cursor-pointer">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                        </td>` 
                     : '';
 
                 tr.innerHTML = `
-                    <td class="p-3"><span class="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-semibold px-2.5 py-0.5 rounded">${escapeHtml(acc.type)}</span></td>
-                    <td class="p-3 font-medium">${escapeHtml(acc.user)}</td>
-                    <td class="p-3 font-mono text-blue-600 dark:text-blue-400">${escapeHtml(acc.pass)}</td>
+                    <td class="p-3"><span class="bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 text-[11px] font-bold px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/30">${escapeHtml(acc.type)}</span></td>
+                    <td class="p-3 text-gray-900 dark:text-gray-100">${escapeHtml(acc.user)}</td>
+                    <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
                     <td class="p-3 text-gray-500 dark:text-gray-400 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
                     ${actionCell}
                 `;
@@ -303,37 +334,26 @@
             if(currentRole === 'admin') {
                 document.querySelectorAll('.btn-delete').forEach(button => {
                     button.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        if(confirm('Bạn chắc chắn muốn xóa tài khoản này khỏi Cloud?')) {
-                            remove(ref(database, 'accounts/' + id));
+                        if(confirm('Xóa tài khoản này?')) {
+                            remove(ref(database, 'accounts/' + this.getAttribute('data-id')));
                         }
                     });
                 });
             }
         }
 
-        // Thêm tài khoản mới (Chỉ Admin)
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            if (currentRole !== 'admin') {
-                alert("Bạn không có quyền thực hiện hành động này!");
-                return;
-            }
-            
+            if (currentRole !== 'admin') return;
             const newAccRef = push(dbRef);
             set(newAccRef, {
                 type: document.getElementById('accType').value,
                 user: document.getElementById('accUser').value,
                 pass: document.getElementById('accPass').value,
                 note: document.getElementById('accNote').value
-            }).then(() => {
-                document.getElementById('accForm').reset();
-            }).catch((error) => {
-                alert("Lỗi khi đẩy dữ liệu: " + error.message);
-            });
+            }).then(() => document.getElementById('accForm').reset());
         });
 
-        // Tìm kiếm nhanh
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localDataCache.filter(acc => 
@@ -348,9 +368,46 @@
             if (!str) return '';
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
-
-        // Chạy kiểm tra đăng nhập ngay khi mở trang
         checkAuth();
+    </script>
+
+    <script>
+        let deferredPrompt;
+        const pwaBanner = document.getElementById('pwaInstallBanner');
+        const btnInstallPWA = document.getElementById('btnInstallPWA');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaBanner.classList.remove('hidden');
+        });
+
+        btnInstallPWA.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    pwaBanner.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            pwaBanner.classList.add('hidden');
+            console.log('Ứng dụng đã được cài đặt thành công!');
+        });
+
+        // Tạo Service Worker ảo trực tiếp từ code để kích hoạt PWA trên trình duyệt tĩnh
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', e => self.skipWaiting());
+                self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Error', err));
+        }
     </script>
 </body>
 </html>
