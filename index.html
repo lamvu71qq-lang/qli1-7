@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -20,6 +20,19 @@
         }
         input, select { user-select: text; }
         ::-webkit-scrollbar { display: none; }
+        
+        /* Hiệu ứng nhảy emoji */
+        @keyframes emojiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .welcome-emoji {
+            position: fixed;
+            z-index: 9999;
+            font-size: 32px;
+            pointer-events: none;
+            animation: emojiFall 2.5s linear forwards;
+        }
     </style>
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -86,6 +99,11 @@
                 </button>
                 <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-gray-900">
                     <span id="roleBadge" class="text-[11px] font-black uppercase px-2 py-0.5 rounded-md"></span>
+                    
+                    <button id="btnOpenProfile" class="text-gray-500 hover:text-blue-500 transition cursor-pointer text-sm p-1 ml-1" title="Đổi tài khoản / mật khẩu của bạn">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </button>
+
                     <button id="btnLogout" class="text-gray-400 hover:text-red-500 transition cursor-pointer text-sm p-1" title="Đăng xuất">
                         <i class="fa-solid fa-power-off"></i>
                     </button>
@@ -195,6 +213,29 @@
         </div>
     </div>
 
+    <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-200">
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                <i class="fa-solid fa-user-pen text-blue-500 mr-2"></i> Đổi Thông Tin Đăng Nhập
+            </h3>
+            <p class="text-xs text-gray-400 mb-4">Bạn đang thay đổi tài khoản và mật khẩu của chính bạn trên hệ thống.</p>
+            <form id="profileForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản mới</label>
+                    <input type="text" id="profileUser" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-950 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu mới</label>
+                    <input type="text" id="profilePass" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-950 outline-none text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" id="btnCancelProfile" class="px-4 py-2 text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 rounded-xl cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 text-white rounded-xl cursor-pointer shadow-md shadow-blue-500/10">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function toggleTheme() {
             if (document.documentElement.classList.contains('dark')) {
@@ -245,6 +286,7 @@
 
         let currentUserRole = sessionStorage.getItem('userRole') || null;
         let currentUserName = sessionStorage.getItem('userName') || '';
+        let currentUserFirebaseKey = sessionStorage.getItem('userFirebaseKey') || ''; // Để lưu vết khóa QTV đang đăng nhập
 
         const loginScreen = document.getElementById('loginScreen');
         const mainContent = document.getElementById('mainContent');
@@ -265,7 +307,34 @@
         const txtTotalMembers = document.getElementById('txtTotalMembers');
         const txtTotalAccs = document.getElementById('txtTotalAccs');
 
+        // Các phần tử Profile Modal
+        const profileModal = document.getElementById('profileModal');
+        const btnOpenProfile = document.getElementById('btnOpenProfile');
+        const btnCancelProfile = document.getElementById('btnCancelProfile');
+        const profileForm = document.getElementById('profileForm');
+        const profileUser = document.getElementById('profileUser');
+        const profilePass = document.getElementById('profilePass');
+
         let localAccCache = [];
+
+        // HÀM TẠO HIỆU ỨNG EMOJI NHẢY CHÀO MỪNG
+        function triggerWelcomeEmojis(type) {
+            const emojis = type === 'admin' ? ['🧸', '🐡'] : ['🎱', '🪳'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'welcome-emoji';
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.top = '-40px';
+                    el.style.animationDelay = Math.random() * 0.5 + 's';
+                    el.style.fontSize = Math.floor(Math.random() * 20) + 24 + 'px';
+                    document.body.appendChild(el);
+                    // Tự xóa sau khi rơi xong
+                    setTimeout(() => el.remove(), 2500);
+                }, i * 60);
+            }
+        }
 
         function checkAuth() {
             if (currentUserRole === 'admin') {
@@ -313,11 +382,14 @@
             if (user === "gbao08" && pass === "Gbao0088!?") {
                 currentUserRole = 'admin';
                 currentUserName = 'gbao08';
+                currentUserFirebaseKey = 'ADMIN_MASTER';
                 sessionStorage.setItem('userRole', 'admin');
                 sessionStorage.setItem('userName', 'gbao08');
+                sessionStorage.setItem('userFirebaseKey', 'ADMIN_MASTER');
                 loginError.classList.add('hidden');
                 loginForm.reset();
                 checkAuth();
+                triggerWelcomeEmojis('admin'); // Chào mừng Admin 🧸🐡
                 return;
             }
 
@@ -325,11 +397,13 @@
                 const snapshot = await get(usersRef);
                 const usersData = snapshot.val();
                 let matched = false;
+                let matchedKey = '';
 
                 if (usersData) {
                     Object.keys(usersData).forEach(key => {
                         if (usersData[key].username === user && usersData[key].password === pass) {
                             matched = true;
+                            matchedKey = key;
                         }
                     });
                 }
@@ -337,11 +411,14 @@
                 if (matched) {
                     currentUserRole = 'qtv';
                     currentUserName = user;
+                    currentUserFirebaseKey = matchedKey;
                     sessionStorage.setItem('userRole', 'qtv');
                     sessionStorage.setItem('userName', user);
+                    sessionStorage.setItem('userFirebaseKey', matchedKey);
                     loginError.classList.add('hidden');
                     loginForm.reset();
                     checkAuth();
+                    triggerWelcomeEmojis('qtv'); // Chào mừng QTV 🎱🪳
                 } else {
                     loginError.classList.remove('hidden');
                 }
@@ -353,9 +430,64 @@
         btnLogout.addEventListener('click', () => {
             currentUserRole = null;
             currentUserName = '';
+            currentUserFirebaseKey = '';
             sessionStorage.removeItem('userRole');
             sessionStorage.removeItem('userName');
+            sessionStorage.removeItem('userFirebaseKey');
             checkAuth();
+        });
+
+        // ⚙️ CHỨC NĂNG TỰ ĐỔI TÀI KHOẢN VÀ PASS CỦA CHÍNH MÌNH KHI VÀO WEB
+        btnOpenProfile.addEventListener('click', async () => {
+            if (currentUserRole === 'admin') {
+                profileUser.value = currentUserName;
+                profilePass.value = "Gbao0088!?"; // Pass gốc hiển thị để sửa nếu muốn
+            } else {
+                // Lấy thông tin mới nhất từ Firebase cho chính xác
+                const currentSnap = await get(ref(database, 'users/' + currentUserFirebaseKey));
+                if (currentSnap.exists()) {
+                    profileUser.value = currentSnap.val().username;
+                    profilePass.value = currentSnap.val().password;
+                } else {
+                    profileUser.value = currentUserName;
+                }
+            }
+            profileModal.classList.remove('hidden');
+            profileModal.classList.add('flex');
+        });
+
+        btnCancelProfile.addEventListener('click', () => {
+            profileModal.classList.add('hidden');
+            profileModal.classList.remove('flex');
+        });
+
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newUser = profileUser.value.trim();
+            const newPass = profilePass.value.trim();
+
+            if (!newUser || !newPass) return;
+
+            if (currentUserRole === 'admin') {
+                alert("Tài khoản Root Admin cố định bảo mật. Bạn không thể thay đổi từ xa tại đây!");
+                profileModal.classList.add('hidden');
+                profileModal.classList.remove('flex');
+                return;
+            }
+
+            // Tiến hành update lên Firebase cho QTV
+            set(ref(database, 'users/' + currentUserFirebaseKey), {
+                username: newUser,
+                password: newPass
+            }).then(() => {
+                // Cập nhật lại phiên làm việc tạm thời
+                currentUserName = newUser;
+                sessionStorage.setItem('userName', newUser);
+                
+                alert("Thay đổi tài khoản của bạn thành công! Hệ thống sẽ ghi nhận phiên mới.");
+                profileModal.classList.add('hidden');
+                profileModal.classList.remove('flex');
+            }).catch(err => alert("Lỗi khi đổi thông tin: " + err.message));
         });
 
         // ĐỒNG BỘ REALTIME KHO ACC VÀ CẬP NHẬT SỐ LƯỢNG KHO (TẤT CẢ QTV/ADMIN ĐỀU XEM ĐƯỢC)
@@ -407,7 +539,7 @@
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             
-                            const msg = `📤 *THÔNG BÁO TỪ ADMIN/QTV: ${currentUserName.toUpperCase()}*\n` +
+                            const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
                                         `💎 *Thông tin MP:* ${accMp}\n` +
@@ -432,7 +564,7 @@
                 document.getElementById('accForm').reset();
                 const currentTotal = localAccCache.length + 1;
                 
-                const msg = `📥 *THÔNG BÁO TỪ ADMIN/QTV: ${currentUserName.toUpperCase()}*\n` +
+                const msg = `📥 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
                             `🔑 *Mật khẩu:* \`${pass}\`\n` +
@@ -502,7 +634,7 @@
             });
         });
 
-        // BỘ LỌC TÌM KIẾM THEO TẤT CẢ TỪ KHÓA TRONG KHO (Ví dụ gõ 10-21, 82M...)
+        // BỘ LỌC TÌM KIẾM
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localAccCache.filter(acc => 
