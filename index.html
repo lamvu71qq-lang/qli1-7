@@ -108,18 +108,13 @@
                         <input type="text" id="accPass" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số lượng MP (Ghi chú)</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Khoảng số lượng MP</label>
                         <select id="accMp" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
-                            <option value="10M MP">10M MP</option>
-                            <option value="20M MP">20M MP</option>
-                            <option value="30M MP">30M MP</option>
-                            <option value="40M MP">40M MP</option>
-                            <option value="50M MP">50M MP</option>
-                            <option value="60M MP">60M MP</option>
-                            <option value="70M MP">70M MP</option>
-                            <option value="80M MP">80M MP</option>
-                            <option value="90M MP">90M MP</option>
-                            <option value="100M MP">100M MP</option>
+                            <option value="10-21M MP">10 - 21M MP</option>
+                            <option value="21-40M MP">21 - 40M MP</option>
+                            <option value="41-60M MP">41 - 60M MP</option>
+                            <option value="61-80M MP">61 - 80M MP</option>
+                            <option value="81-100M MP">81 - 100M MP</option>
                         </select>
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
@@ -135,7 +130,7 @@
                         <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
                     </div>
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Tìm nhanh theo TK hoặc MP..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="searchBar" placeholder="Tìm nhanh theo TK hoặc khoảng MP..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     </div>
                 </div>
@@ -146,7 +141,7 @@
                             <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
-                                <th class="p-3">Số lượng MP</th>
+                                <th class="p-3">Khoảng MP</th>
                                 <th class="p-3 text-center">Xuất</th>
                             </tr>
                         </thead>
@@ -289,10 +284,10 @@
             } else if (currentUserRole === 'qtv') {
                 loginScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
-                adminNav.classList.add('hidden'); // Khóa nút chuyển hướng Cài đặt đối với QTV
+                adminNav.classList.add('hidden');
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900/40";
                 roleBadge.innerHTML = `QTV`;
-                switchTab('acc'); // QTV chỉ ở giao diện quản lý / xem kho Acc chung
+                switchTab('acc');
             } else {
                 loginScreen.classList.remove('hidden');
                 mainContent.classList.add('hidden');
@@ -397,9 +392,9 @@
                 tr.innerHTML = `
                     <td class="p-3 text-gray-900 dark:text-gray-100 font-semibold">${escapeHtml(acc.user)}</td>
                     <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
-                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || '10M MP')}</span></td>
+                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || '10-21M MP')}</span></td>
                     <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || '10M MP')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
+                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || '10-21M MP')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
                             <i class="fa-solid fa-box-open"></i>
                         </button>
                     </td>
@@ -421,7 +416,7 @@
                             const msg = `📤 *THÔNG BÁO TỪ ADMIN: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
-                                        `💎 *Ghi chú cấu hình:* ${accMp}\n` +
+                                        `💎 *Khoảng MP:* ${accMp}\n` +
                                         `📉 *Số lượng còn lại trong kho:* \`${currentRemain}\` acc.`;
                             sendTelegramNotification(msg);
                         });
@@ -430,7 +425,7 @@
             });
         }
 
-        // 📥 LOGIC UP ACC (CHỈ CẦN TK MK VÀ CHỌN MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
+        // 📥 LOGIC UP ACC (CHỈ CẦN TK MK VÀ CHỌN KHOẢNG MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -447,7 +442,7 @@
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
                             `🔑 *Mật khẩu:* \`${pass}\`\n` +
-                            `💎 *Ghi chú số lượng:* ${mp}\n` +
+                            `💎 *Khoảng MP:* ${mp}\n` +
                             `📈 *Tổng số lượng trong kho:* \`${currentTotal}\` acc.`;
                 sendTelegramNotification(msg);
             });
