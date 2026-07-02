@@ -177,7 +177,7 @@
                     </div>
                 </div>
 
-                <!-- 📜 BẢNG LỊCH SỬ ĐÃ LẤY (NEW FEATURE) -->
+                <!-- 📜 BẢNG LỊCH SỬ ĐÃ LẤY -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
                     <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
                         <div class="flex items-center gap-3">
@@ -232,7 +232,7 @@
                 </form>
             </div>
 
-            <!-- Dashboard Nhân Sự -->
+            <!-- Dashboard Nhân Personnel -->
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
                     <div>
@@ -319,24 +319,7 @@
         const TELEGRAM_TOKEN = "8811045334:AAHHk2xG3gEHY-Ez9HJOdrtkWTzUihvFsCw";
         const TELEGRAM_CHAT_ID = "-1003941908120";
 
-        function sendTelegramNotification(message) {
-            const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: message,
-                    parse_mode: "Markdown"
-                })
-            }).catch(err => console.error("Lỗi gửi Telegram: ", err));
-        }
-
-        // Thay đổi sang lưu phiên tại localStorage thay vì sessionStorage để duy trì trạng thái đăng nhập tự động
-        let currentUserRole = localStorage.getItem('userRole') || null;
-        let currentUserName = localStorage.getItem('userName') || '';
-        let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
-
+        // 1. ĐỊNH NGHĨA TOÀN BỘ BIẾN GIAO DIỆN TRƯỚC
         const loginScreen = document.getElementById('loginScreen');
         const mainContent = document.getElementById('mainContent');
         const loginForm = document.getElementById('loginForm');
@@ -358,7 +341,31 @@
         const historyTableBody = document.getElementById('historyTableBody');
         const btnClearHistory = document.getElementById('btnClearHistory');
 
+        const profileModal = document.getElementById('profileModal');
+        const btnOpenProfile = document.getElementById('btnOpenProfile');
+        const btnCancelProfile = document.getElementById('btnCancelProfile');
+        const profileForm = document.getElementById('profileForm');
+        const profileUser = document.getElementById('profileUser');
+        const profilePass = document.getElementById('profilePass');
+
+        // 2. KHỞI TẠO BIẾN DỮ LIỆU TỪ LOCAL STORAGE
+        let currentUserRole = localStorage.getItem('userRole') || null;
+        let currentUserName = localStorage.getItem('userName') || '';
+        let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
         let localAccCache = [];
+
+        function sendTelegramNotification(message) {
+            const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: "Markdown"
+                })
+            }).catch(err => console.error("Lỗi gửi Telegram: ", err));
+        }
 
         function triggerWelcomeEmojis(type) {
             const emojis = type === 'admin' ? ['🧸', '🐡'] : ['🎱', '🪳'];
@@ -480,14 +487,6 @@
             checkAuth();
         });
 
-        // ⚙️ CHỨC NĂNG TỰ ĐỔI TÀI KHOẢN VÀ PASS CỦA CHÍNH MÌNH KHI VÀO WEB
-        const profileModal = document.getElementById('profileModal');
-        const btnOpenProfile = document.getElementById('btnOpenProfile');
-        const btnCancelProfile = document.getElementById('btnCancelProfile');
-        const profileForm = document.getElementById('profileForm');
-        const profileUser = document.getElementById('profileUser');
-        const profilePass = document.getElementById('profilePass');
-
         btnOpenProfile.addEventListener('click', async () => {
             if (currentUserRole === 'admin') {
                 profileUser.value = currentUserName;
@@ -536,7 +535,7 @@
             }).catch(err => alert("Lỗi khi đổi thông tin: " + err.message));
         });
 
-        // ĐỒNG BỘ REALTIME KHO ACC VÀ CẬP NHẬT SỐ LƯỢNG KHO
+        // ĐỒNG BỘ REALTIME KHO ACC
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localAccCache = [];
@@ -585,7 +584,7 @@
                         
                         const textToCopy = `${accUser}|${accPass}`;
                         navigator.clipboard.writeText(textToCopy).then(() => {
-                            console.log("Đã sao chép thành công định dạng tài khoản|mật khẩu");
+                            console.log("Đã sao chép thành công");
                         }).catch(err => {
                             const textArea = document.createElement("textarea");
                             textArea.value = textToCopy;
@@ -595,12 +594,10 @@
                             textArea.remove();
                         });
 
-                        // Thực hiện ghi nhận vào Lịch sử cục bộ trên trình duyệt (Local History)
                         saveToLocalHistory(accUser, accPass, accMp);
 
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
-                            
                             const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
@@ -614,7 +611,6 @@
             });
         }
 
-        // ⚙️ LOGIC LƯU VÀ HIỂN THỊ LỊCH SỬ XUẤT ACC
         function saveToLocalHistory(user, pass, mp) {
             let currentHistory = JSON.parse(localStorage.getItem('acc_export_history')) || [];
             const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
@@ -626,8 +622,8 @@
                 info: mp
             };
             
-            currentHistory.unshift(item); // Thêm lên đầu danh sách
-            if(currentHistory.length > 50) currentHistory.pop(); // Giới hạn tối đa 50 bản ghi cho nhẹ máy
+            currentHistory.unshift(item);
+            if(currentHistory.length > 50) currentHistory.pop();
             localStorage.setItem('acc_export_history', JSON.stringify(currentHistory));
             renderHistoryTable();
         }
@@ -660,10 +656,9 @@
             }
         });
 
-        // 📥 LOGIC UP ACC
+        // UP ACC
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const user = document.getElementById('accUser').value.trim();
             const pass = document.getElementById('accPass').value.trim();
             const mp = document.getElementById('accMp').value.trim();
@@ -672,7 +667,6 @@
             set(newAccRef, { user, pass, mp }).then(() => {
                 document.getElementById('accForm').reset();
                 const currentTotal = localAccCache.length + 1;
-                
                 const msg = `📥 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
@@ -683,7 +677,7 @@
             });
         });
 
-        // REALTIME SERVER THÀNH VIÊN
+        // REALTIME THÀNH VIÊN
         onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
             qtvTableBody.innerHTML = '';
@@ -743,7 +737,6 @@
             });
         });
 
-        // BỘ LỌC TÌM KIẾM
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localAccCache.filter(acc => 
@@ -758,6 +751,7 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
+        // 3. CHẠY KIỂM TRA PHIÊN SAU CÙNG KHI CÁC THÀNH PHẦN ĐÃ SẴN SÀNG
         checkAuth();
     </script>
 </body>
