@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Hệ Thống Quản Trị & Thông Báo Telegram Cloud</title>
     
+    <!-- Cấu hình PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Kho Cloud">
     
+    <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -44,6 +47,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
 
+    <!-- ================= 🔒 MÀN HÌNH ĐĂNG NHẬP BẮT BUỘC 🔒 ================= -->
     <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
         <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative">
             
@@ -80,12 +84,15 @@
     </div>
 
 
+    <!-- ================= GIAO DIỆN CHÍNH (Sau khi đăng nhập) ================= -->
     <div id="mainContent" class="hidden max-w-6xl mx-auto px-4 pt-6">
+        <!-- Header Topbar -->
         <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 gap-4">
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
                     <i class="fa-solid fa-server text-blue-500 mr-2"></i>KHO ACC DATABASE
                 </h1>
+                <!-- Menu chuyển đổi (Chỉ Hiện Khi Là Admin để quản lý nhân sự) -->
                 <nav id="adminNav" class="hidden flex gap-1 bg-gray-100 dark:bg-gray-950 p-1 rounded-xl border border-gray-200 dark:border-gray-800">
                     <button id="btnTabAcc" class="px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm cursor-pointer">Kho Acc</button>
                     <button id="btnTabSettings" class="px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer">Cài Đặt</button>
@@ -100,6 +107,7 @@
                 <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-gray-900">
                     <span id="roleBadge" class="text-[11px] font-black uppercase px-2 py-0.5 rounded-md"></span>
                     
+                    <!-- Nút đổi thông tin tài khoản cho QTV & Admin -->
                     <button id="btnOpenProfile" class="text-gray-500 hover:text-blue-500 transition cursor-pointer text-sm p-1 ml-1" title="Đổi tài khoản / mật khẩu của bạn">
                         <i class="fa-solid fa-user-gear"></i>
                     </button>
@@ -111,7 +119,9 @@
             </div>
         </header>
 
+        <!-- PAGE 1: KHO ACC (Admin và QTV đều nhìn thấy bảng này) -->
         <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Thêm Mới Acc -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
@@ -135,6 +145,7 @@
                 </form>
             </div>
 
+            <!-- Bảng hiển thị Acc (Tất cả QTV & Admin đều xem được) -->
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
                     <div class="flex items-center gap-3">
@@ -166,7 +177,9 @@
             </div>
         </div>
 
+        <!-- PAGE 2: ⚙️ CÀI ĐẶT (Chỉ Admin nhìn thấy tab này) -->
         <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Tạo QTV Mới -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-purple-600 dark:text-purple-400">
                     <i class="fa-solid fa-user-plus mr-2"></i>Tạo Tài Khoản QTV
@@ -186,6 +199,7 @@
                 </form>
             </div>
 
+            <!-- Dashboard Nhân Sự -->
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
                     <div>
@@ -213,6 +227,7 @@
         </div>
     </div>
 
+    <!-- ================= ⚙️ MODAL ĐỔI TÀI KHOẢN / PASS CHO CHÍNH QTV & ADMIN ================= -->
     <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-200">
         <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
@@ -248,6 +263,7 @@
         }
     </script>
 
+    <!-- LOGIC FIREBASE & TELEGRAM BOT REALTIME -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -286,7 +302,7 @@
 
         let currentUserRole = sessionStorage.getItem('userRole') || null;
         let currentUserName = sessionStorage.getItem('userName') || '';
-        let currentUserFirebaseKey = sessionStorage.getItem('userFirebaseKey') || ''; // Để lưu vết khóa QTV đang đăng nhập
+        let currentUserFirebaseKey = sessionStorage.getItem('userFirebaseKey') || '';
 
         const loginScreen = document.getElementById('loginScreen');
         const mainContent = document.getElementById('mainContent');
@@ -330,7 +346,6 @@
                     el.style.animationDelay = Math.random() * 0.5 + 's';
                     el.style.fontSize = Math.floor(Math.random() * 20) + 24 + 'px';
                     document.body.appendChild(el);
-                    // Tự xóa sau khi rơi xong
                     setTimeout(() => el.remove(), 2500);
                 }, i * 60);
             }
@@ -389,7 +404,7 @@
                 loginError.classList.add('hidden');
                 loginForm.reset();
                 checkAuth();
-                triggerWelcomeEmojis('admin'); // Chào mừng Admin 🧸🐡
+                triggerWelcomeEmojis('admin');
                 return;
             }
 
@@ -418,7 +433,7 @@
                     loginError.classList.add('hidden');
                     loginForm.reset();
                     checkAuth();
-                    triggerWelcomeEmojis('qtv'); // Chào mừng QTV 🎱🪳
+                    triggerWelcomeEmojis('qtv');
                 } else {
                     loginError.classList.remove('hidden');
                 }
@@ -441,9 +456,8 @@
         btnOpenProfile.addEventListener('click', async () => {
             if (currentUserRole === 'admin') {
                 profileUser.value = currentUserName;
-                profilePass.value = "Gbao0088!?"; // Pass gốc hiển thị để sửa nếu muốn
+                profilePass.value = "Gbao0088!?";
             } else {
-                // Lấy thông tin mới nhất từ Firebase cho chính xác
                 const currentSnap = await get(ref(database, 'users/' + currentUserFirebaseKey));
                 if (currentSnap.exists()) {
                     profileUser.value = currentSnap.val().username;
@@ -475,22 +489,19 @@
                 return;
             }
 
-            // Tiến hành update lên Firebase cho QTV
             set(ref(database, 'users/' + currentUserFirebaseKey), {
                 username: newUser,
                 password: newPass
             }).then(() => {
-                // Cập nhật lại phiên làm việc tạm thời
                 currentUserName = newUser;
                 sessionStorage.setItem('userName', newUser);
-                
                 alert("Thay đổi tài khoản của bạn thành công! Hệ thống sẽ ghi nhận phiên mới.");
                 profileModal.classList.add('hidden');
                 profileModal.classList.remove('flex');
             }).catch(err => alert("Lỗi khi đổi thông tin: " + err.message));
         });
 
-        // ĐỒNG BỘ REALTIME KHO ACC VÀ CẬP NHẬT SỐ LƯỢNG KHO (TẤT CẢ QTV/ADMIN ĐỀU XEM ĐƯỢC)
+        // ĐỒNG BỘ REALTIME KHO ACC VÀ CẬP NHẬT SỐ LƯỢNG KHO
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localAccCache = [];
@@ -520,7 +531,7 @@
                     <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
                     <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || 'Chưa ghi chú')}</span></td>
                     <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
+                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-pass="${escapeHtml(acc.pass)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Xuất acc & Auto Copy">
                             <i class="fa-solid fa-box-open"></i>
                         </button>
                     </td>
@@ -528,20 +539,38 @@
                 accTableBody.appendChild(tr);
             });
 
-            // 📤 LOGIC XUẤT ACC (XÓA KHỎI KHO) -> BÁO BOT TELEGRAM VỀ SỐ LƯỢNG CÒN LẠI
+            // 📤 LOGIC XUẤT ACC + TỰ ĐỘNG SAO CHÉP + BÁO TELEGRAM (CẢ TK VÀ MK)
             document.querySelectorAll('.btn-delete-acc').forEach(button => {
                 button.addEventListener('click', function() {
                     const accId = this.getAttribute('data-id');
                     const accUser = this.getAttribute('data-user');
+                    const accPass = this.getAttribute('data-pass');
                     const accMp = this.getAttribute('data-mp');
                     
-                    if(confirm(`Xác nhận xuất tài khoản ${accUser} ra khỏi hệ thống?`)) {
+                    if(confirm(`Xác nhận xuất tài khoản ${accUser} ra khỏi hệ thống?\n(Hệ thống tự động copy và báo thông tin về Telegram)`)) {
+                        
+                        // 1. Thực hiện Sao chép chuỗi "Tài khoản|Mật khẩu" vào bộ nhớ Clipboard máy
+                        const textToCopy = `${accUser}|${accPass}`;
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            console.log("Đã sao chép thành công định dạng tài khoản|mật khẩu");
+                        }).catch(err => {
+                            const textArea = document.createElement("textarea");
+                            textArea.value = textToCopy;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            textArea.remove();
+                        });
+
+                        // 2. Tiến hành xóa acc khỏi cơ sở dữ liệu Firebase
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             
+                            // Cấu trúc nội dung tin nhắn gửi về Telegram chứa cả Tài khoản, Mật khẩu và số MP
                             const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
+                                        `🔑 *Mật khẩu:* \`${accPass}\`\n` +
                                         `💎 *Thông tin MP:* ${accMp}\n` +
                                         `📉 *Số lượng còn lại trong kho:* \`${currentRemain}\` acc.`;
                             sendTelegramNotification(msg);
@@ -551,7 +580,7 @@
             });
         }
 
-        // 📥 LOGIC UP ACC (TỰ NHẬP TAY SỐ LƯỢNG MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
+        // 📥 LOGIC UP ACC
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -574,7 +603,7 @@
             });
         });
 
-        // REALTIME SERVER THÀNH VIÊN (Dành riêng cho Admin quản trị)
+        // REALTIME SERVER THÀNH VIÊN
         onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
             qtvTableBody.innerHTML = '';
