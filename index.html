@@ -18,7 +18,7 @@
             -webkit-touch-callout: none;
             user-select: none;
         }
-        input, textarea { user-select: text; }
+        input, select { user-select: text; }
         ::-webkit-scrollbar { display: none; }
     </style>
     <script>
@@ -96,15 +96,11 @@
         <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <i class="fa-solid fa-plus text-green-500 mr-2"></i>Thêm Mới Acc (Up Acc)
+                    <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
                 </h2>
                 <form id="accForm" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Loại tài khoản</label>
-                        <input type="text" id="accType" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên đăng nhập</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên đăng nhập / Tài khoản</label>
                         <input type="text" id="accUser" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
@@ -112,11 +108,22 @@
                         <input type="text" id="accPass" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ghi chú bổ sung</label>
-                        <textarea id="accNote" rows="2" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Hạn dùng, giá tiền..."></textarea>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Số lượng MP (Ghi chú)</label>
+                        <select id="accMp" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
+                            <option value="10M MP">10M MP</option>
+                            <option value="20M MP">20M MP</option>
+                            <option value="30M MP">30M MP</option>
+                            <option value="40M MP">40M MP</option>
+                            <option value="50M MP">50M MP</option>
+                            <option value="60M MP">60M MP</option>
+                            <option value="70M MP">70M MP</option>
+                            <option value="80M MP">80M MP</option>
+                            <option value="90M MP">90M MP</option>
+                            <option value="100M MP">100M MP</option>
+                        </select>
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
-                        Đồng Bộ Lên Cloud & Báo Bot
+                        Đồng Bộ Lên Kho & Báo Bot
                     </button>
                 </form>
             </div>
@@ -124,11 +131,11 @@
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
                     <div class="flex items-center gap-3">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Danh Sách Kho Acc</h2>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Danh Sách Kho Acc Hệ Thống</h2>
                         <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
                     </div>
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Tìm nhanh..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="searchBar" placeholder="Tìm nhanh theo TK hoặc MP..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
                     </div>
                 </div>
@@ -137,10 +144,9 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
-                                <th class="p-3">Loại</th>
                                 <th class="p-3">Tài khoản</th>
                                 <th class="p-3">Mật khẩu</th>
-                                <th class="p-3">Ghi chú</th>
+                                <th class="p-3">Số lượng MP</th>
                                 <th class="p-3 text-center">Xuất</th>
                             </tr>
                         </thead>
@@ -148,7 +154,7 @@
                     </table>
                 </div>
                 <div id="emptyState" class="text-center py-12 text-gray-400">
-                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang kết nối dữ liệu...
+                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang kết nối kho dữ liệu chung...
                 </div>
             </div>
         </div>
@@ -176,7 +182,7 @@
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
                     <div>
-                        <p class="text-sm font-medium opacity-80 uppercase tracking-wider">Tổng thành viên trong Server</p>
+                        <p class="text-sm font-medium opacity-80 uppercase tracking-wider">Tổng thành viên vận hành Server</p>
                         <h3 id="txtTotalMembers" class="text-4xl font-black mt-1">1</h3>
                     </div>
                     <i class="fa-solid fa-users-gear text-4xl opacity-30"></i>
@@ -231,7 +237,7 @@
         const dbRef = ref(database, 'accounts'); 
         const usersRef = ref(database, 'users');
 
-        // Cấu hình Telegram Bot
+        // Cấu hình mã Telegram Bot
         const TELEGRAM_TOKEN = "8811045334:AAHHk2xG3gEHY-Ez9HJOdrtkWTzUihvFsCw";
         const TELEGRAM_CHAT_ID = "-1003941908120";
 
@@ -283,10 +289,10 @@
             } else if (currentUserRole === 'qtv') {
                 loginScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
-                adminNav.classList.add('hidden');
+                adminNav.classList.add('hidden'); // Khóa nút chuyển hướng Cài đặt đối với QTV
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900/40";
                 roleBadge.innerHTML = `QTV`;
-                switchTab('acc');
+                switchTab('acc'); // QTV chỉ ở giao diện quản lý / xem kho Acc chung
             } else {
                 loginScreen.classList.remove('hidden');
                 mainContent.classList.add('hidden');
@@ -363,6 +369,7 @@
             checkAuth();
         });
 
+        // ĐỒNG BỘ REALTIME KHO ACC VÀ CẬP NHẬT SỐ LƯỢNG KHO (TẤT CẢ QTV/ADMIN ĐỀU XEM ĐƯỢC)
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             localAccCache = [];
@@ -378,7 +385,7 @@
         function renderAccTable(dataToRender) {
             accTableBody.innerHTML = '';
             if (dataToRender.length === 0) {
-                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-3xl mb-2 block"></i> Kho rỗng.`;
+                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-3xl mb-2 block"></i> Kho đang trống.`;
                 emptyState.classList.remove('hidden');
                 return;
             }
@@ -388,12 +395,11 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-850/40 transition duration-100";
                 tr.innerHTML = `
-                    <td class="p-3"><span class="bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 text-[11px] font-bold px-2 py-0.5 rounded-md border border-blue-100 dark:border-blue-900/30">${escapeHtml(acc.type)}</span></td>
-                    <td class="p-3 text-gray-900 dark:text-gray-100">${escapeHtml(acc.user)}</td>
+                    <td class="p-3 text-gray-900 dark:text-gray-100 font-semibold">${escapeHtml(acc.user)}</td>
                     <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
-                    <td class="p-3 text-gray-500 dark:text-gray-400 max-w-xs truncate" title="${escapeHtml(acc.note || '')}">${escapeHtml(acc.note || '-')}</td>
+                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || '10M MP')}</span></td>
                     <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-type="${escapeHtml(acc.type)}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
+                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-mp="${escapeHtml(acc.mp || '10M MP')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer">
                             <i class="fa-solid fa-box-open"></i>
                         </button>
                     </td>
@@ -401,22 +407,21 @@
                 accTableBody.appendChild(tr);
             });
 
-            // 📤 LOGIC XUẤT ACC (XÓA KHỎI KHO) -> BÁO RÕ ADMIN NÀO XUẤT
+            // 📤 LOGIC XUẤT ACC (XÓA KHỎI KHO) -> BÁO BOT TELEGRAM VỀ SỐ LƯỢNG CÒN LẠI
             document.querySelectorAll('.btn-delete-acc').forEach(button => {
                 button.addEventListener('click', function() {
                     const accId = this.getAttribute('data-id');
                     const accUser = this.getAttribute('data-user');
-                    const accType = this.getAttribute('data-type');
+                    const accMp = this.getAttribute('data-mp');
                     
                     if(confirm(`Xác nhận xuất tài khoản ${accUser} ra khỏi hệ thống?`)) {
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             
-                            // Ghi cụ thể Admin thực hiện hành động này ở tiêu đề thông báo
                             const msg = `📤 *THÔNG BÁO TỪ ADMIN: ${currentUserName.toUpperCase()}*\n` +
-                                        `⚙️ *Hành động:* Xuất tài khoản khỏi kho\n` +
-                                        `🏷️ *Loại acc:* ${accType}\n` +
+                                        `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
+                                        `💎 *Ghi chú cấu hình:* ${accMp}\n` +
                                         `📉 *Số lượng còn lại trong kho:* \`${currentRemain}\` acc.`;
                             sendTelegramNotification(msg);
                         });
@@ -425,32 +430,30 @@
             });
         }
 
-        // 📥 LOGIC UP ACC (THÊM MỚI LÊN CLOUD) -> BÁO RÕ ADMIN NÀO UP
+        // 📥 LOGIC UP ACC (CHỈ CẦN TK MK VÀ CHỌN MP) -> BÁO BOT TELEGRAM VỀ TỔNG KHO MỚI
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const type = document.getElementById('accType').value.trim();
             const user = document.getElementById('accUser').value.trim();
             const pass = document.getElementById('accPass').value.trim();
-            const note = document.getElementById('accNote').value.trim() || '-';
+            const mp = document.getElementById('accMp').value;
 
             const newAccRef = push(dbRef);
-            set(newAccRef, { type, user, pass, note }).then(() => {
+            set(newAccRef, { user, pass, mp }).then(() => {
                 document.getElementById('accForm').reset();
                 const currentTotal = localAccCache.length + 1;
                 
-                // Ghi cụ thể Admin thực hiện hành động này ở tiêu đề thông báo
                 const msg = `📥 *THÔNG BÁO TỪ ADMIN: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
-                            `🏷️ *Loại acc:* ${type}\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
                             `🔑 *Mật khẩu:* \`${pass}\`\n` +
-                            `📝 *Ghi chú:* _${note}_\n` +
+                            `💎 *Ghi chú số lượng:* ${mp}\n` +
                             `📈 *Tổng số lượng trong kho:* \`${currentTotal}\` acc.`;
                 sendTelegramNotification(msg);
             });
         });
 
+        // REALTIME SERVER THÀNH VIÊN (Dành riêng cho Admin quản trị)
         onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
             qtvTableBody.innerHTML = '';
@@ -513,9 +516,8 @@
         searchBar.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const filtered = localAccCache.filter(acc => 
-                acc.type.toLowerCase().includes(keyword) || 
-                acc.user.toLowerCase().includes(keyword) ||
-                (acc.note && acc.note.toLowerCase().includes(keyword))
+                acc.user.toLowerCase().includes(keyword) || 
+                (acc.mp && acc.mp.toLowerCase().includes(keyword))
             );
             renderAccTable(filtered);
         });
