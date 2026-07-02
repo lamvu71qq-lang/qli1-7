@@ -45,11 +45,11 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
 
     <!-- ================= 🔒 MÀN HÌNH ĐĂNG NHẬP BẮT BUỘC 🔒 ================= -->
     <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
-        <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative">
+        <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative transform transition-all duration-300">
             
             <button onclick="toggleTheme()" class="absolute top-5 right-5 text-gray-500 dark:text-gray-400 hover:text-blue-500 p-2 rounded-full bg-gray-100 dark:bg-gray-800 w-10 h-10 flex items-center justify-center cursor-pointer">
                 <i class="fa-solid fa-moon dark:hidden"></i>
@@ -67,11 +67,11 @@
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Tài khoản</label>
-                    <input type="text" id="loginUser" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition">
+                    <input type="text" id="loginUser" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Mật khẩu</label>
-                    <input type="password" id="loginPass" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition">
+                    <input type="password" id="loginPass" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div id="loginError" class="text-red-500 text-sm hidden text-center font-bold">
                     <i class="fa-solid fa-circle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không chính xác!
@@ -87,15 +87,15 @@
     <!-- ================= GIAO DIỆN CHÍNH (Sau khi đăng nhập) ================= -->
     <div id="mainContent" class="hidden max-w-6xl mx-auto px-4 pt-6">
         <!-- Header Topbar -->
-        <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 gap-4">
+        <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 gap-4 transition-all">
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
                     <i class="fa-solid fa-server text-blue-500 mr-2"></i>KHO ACC DATABASE
                 </h1>
-                <!-- Menu chuyển đổi (Chỉ Hiện Khi Là Admin để quản lý nhân sự) -->
+                <!-- Menu chuyển đổi -->
                 <nav id="adminNav" class="hidden flex gap-1 bg-gray-100 dark:bg-gray-950 p-1 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <button id="btnTabAcc" class="px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm cursor-pointer">Kho Acc</button>
-                    <button id="btnTabSettings" class="px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer">Cài Đặt</button>
+                    <button id="btnTabAcc" class="px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm cursor-pointer transition">Kho Acc</button>
+                    <button id="btnTabSettings" class="px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer transition">Cài Đặt</button>
                 </nav>
             </div>
             
@@ -104,10 +104,9 @@
                     <i class="fa-solid fa-moon dark:hidden"></i>
                     <i class="fa-solid fa-sun hidden dark:inline text-yellow-400"></i>
                 </button>
-                <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-gray-900">
+                <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800">
                     <span id="roleBadge" class="text-[11px] font-black uppercase px-2 py-0.5 rounded-md"></span>
                     
-                    <!-- Nút đổi thông tin tài khoản cho QTV & Admin -->
                     <button id="btnOpenProfile" class="text-gray-500 hover:text-blue-500 transition cursor-pointer text-sm p-1 ml-1" title="Đổi tài khoản / mật khẩu của bạn">
                         <i class="fa-solid fa-user-gear"></i>
                     </button>
@@ -119,10 +118,10 @@
             </div>
         </header>
 
-        <!-- PAGE 1: KHO ACC (Admin và QTV đều nhìn thấy bảng này) -->
+        <!-- PAGE 1: KHO ACC -->
         <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Form Thêm Mới Acc -->
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
                 </h2>
@@ -145,42 +144,76 @@
                 </form>
             </div>
 
-            <!-- Bảng hiển thị Acc (Tất cả QTV & Admin đều xem được) -->
-            <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Danh Sách Kho Acc Hệ Thống</h2>
-                        <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
+            <!-- Khối Bên Phải: Gồm Danh sách & Nhật Ký -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Bảng hiển thị Acc Hiện Có -->
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Danh Sách Kho Acc Hệ Thống</h2>
+                            <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <input type="text" id="searchBar" placeholder="Gõ tìm nhanh (Ví dụ: 10-21)..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+                        </div>
                     </div>
-                    <div class="relative w-full sm:w-64">
-                        <input type="text" id="searchBar" placeholder="Gõ tìm nhanh (Ví dụ: 10-21)..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+
+                    <div class="overflow-x-auto rounded-xl">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
+                                    <th class="p-3">Tài khoản</th>
+                                    <th class="p-3">Mật khẩu</th>
+                                    <th class="p-3">Thông tin MP</th>
+                                    <th class="p-3 text-center">Xuất</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyState" class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang kết nối kho dữ liệu chung...
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
-                                <th class="p-3">Tài khoản</th>
-                                <th class="p-3">Mật khẩu</th>
-                                <th class="p-3">Thông tin MP</th>
-                                <th class="p-3 text-center">Xuất</th>
-                            </tr>
-                        </thead>
-                        <tbody id="accTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium"></tbody>
-                    </table>
-                </div>
-                <div id="emptyState" class="text-center py-12 text-gray-400">
-                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang kết nối kho dữ liệu chung...
+                <!-- 📜 BẢNG LỊCH SỬ ĐÃ LẤY (NEW FEATURE) -->
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                                <i class="fa-solid fa-history text-amber-500 mr-2"></i> Nhật Ký Xuất Kho (Lịch Sử)
+                            </h2>
+                        </div>
+                        <button id="btnClearHistory" class="text-[11px] bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold px-3 py-1.5 rounded-xl cursor-pointer transition">
+                            Xóa Lịch Sử Máy
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl max-h-60 overflow-y-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-amber-50/50 dark:bg-amber-950/20 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
+                                    <th class="p-3">Thời gian</th>
+                                    <th class="p-3">Người xuất</th>
+                                    <th class="p-3">Tài khoản | Pass</th>
+                                    <th class="p-3">Thông tin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="text-xs divide-y divide-gray-100 dark:divide-gray-800 text-gray-600 dark:text-gray-300">
+                                <tr>
+                                    <td colspan="4" class="p-4 text-center text-gray-400">Chưa có dữ liệu xuất acc nào trên trình duyệt này.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- PAGE 2: ⚙️ CÀI ĐẶT (Chỉ Admin nhìn thấy tab này) -->
+        <!-- PAGE 2: CÀI ĐẶT -->
         <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Form Tạo QTV Mới -->
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900 h-fit">
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-purple-600 dark:text-purple-400">
                     <i class="fa-solid fa-user-plus mr-2"></i>Tạo Tài Khoản QTV
                 </h2>
@@ -200,7 +233,7 @@
             </div>
 
             <!-- Dashboard Nhân Sự -->
-            <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-900">
+            <div class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
                     <div>
                         <p class="text-sm font-medium opacity-80 uppercase tracking-wider">Tổng thành viên vận hành Server</p>
@@ -210,7 +243,7 @@
                 </div>
 
                 <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4">Danh Sách Nhân Sự Vận Hành</h2>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto rounded-xl">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase border-b border-gray-100 dark:border-gray-800">
@@ -227,7 +260,7 @@
         </div>
     </div>
 
-    <!-- ================= ⚙️ MODAL ĐỔI TÀI KHOẢN / PASS CHO CHÍNH QTV & ADMIN ================= -->
+    <!-- ================= ⚙️ MODAL ĐỔI TÀI KHOẢN / PASS ================= -->
     <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-200">
         <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
@@ -245,7 +278,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" id="btnCancelProfile" class="px-4 py-2 text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 rounded-xl cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 text-white rounded-xl cursor-pointer shadow-md shadow-blue-500/10">Lưu Thay Đổi</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 text-white rounded-xl cursor-pointer shadow-md">Lưu Thay Đổi</button>
                 </div>
             </form>
         </div>
@@ -283,7 +316,6 @@
         const dbRef = ref(database, 'accounts'); 
         const usersRef = ref(database, 'users');
 
-        // Cấu hình mã Telegram Bot
         const TELEGRAM_TOKEN = "8811045334:AAHHk2xG3gEHY-Ez9HJOdrtkWTzUihvFsCw";
         const TELEGRAM_CHAT_ID = "-1003941908120";
 
@@ -300,9 +332,10 @@
             }).catch(err => console.error("Lỗi gửi Telegram: ", err));
         }
 
-        let currentUserRole = sessionStorage.getItem('userRole') || null;
-        let currentUserName = sessionStorage.getItem('userName') || '';
-        let currentUserFirebaseKey = sessionStorage.getItem('userFirebaseKey') || '';
+        // Thay đổi sang lưu phiên tại localStorage thay vì sessionStorage để duy trì trạng thái đăng nhập tự động
+        let currentUserRole = localStorage.getItem('userRole') || null;
+        let currentUserName = localStorage.getItem('userName') || '';
+        let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
 
         const loginScreen = document.getElementById('loginScreen');
         const mainContent = document.getElementById('mainContent');
@@ -322,18 +355,11 @@
         const qtvTableBody = document.getElementById('qtvTableBody');
         const txtTotalMembers = document.getElementById('txtTotalMembers');
         const txtTotalAccs = document.getElementById('txtTotalAccs');
-
-        // Các phần tử Profile Modal
-        const profileModal = document.getElementById('profileModal');
-        const btnOpenProfile = document.getElementById('btnOpenProfile');
-        const btnCancelProfile = document.getElementById('btnCancelProfile');
-        const profileForm = document.getElementById('profileForm');
-        const profileUser = document.getElementById('profileUser');
-        const profilePass = document.getElementById('profilePass');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const btnClearHistory = document.getElementById('btnClearHistory');
 
         let localAccCache = [];
 
-        // HÀM TẠO HIỆU ỨNG EMOJI NHẢY CHÀO MỪNG
         function triggerWelcomeEmojis(type) {
             const emojis = type === 'admin' ? ['🧸', '🐡'] : ['🎱', '🪳'];
             for (let i = 0; i < 30; i++) {
@@ -359,6 +385,7 @@
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/40";
                 roleBadge.innerHTML = `Admin`;
                 switchTab('acc');
+                renderHistoryTable();
             } else if (currentUserRole === 'qtv') {
                 loginScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
@@ -366,6 +393,7 @@
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900/40";
                 roleBadge.innerHTML = `QTV`;
                 switchTab('acc');
+                renderHistoryTable();
             } else {
                 loginScreen.classList.remove('hidden');
                 mainContent.classList.add('hidden');
@@ -398,9 +426,9 @@
                 currentUserRole = 'admin';
                 currentUserName = 'gbao08';
                 currentUserFirebaseKey = 'ADMIN_MASTER';
-                sessionStorage.setItem('userRole', 'admin');
-                sessionStorage.setItem('userName', 'gbao08');
-                sessionStorage.setItem('userFirebaseKey', 'ADMIN_MASTER');
+                localStorage.setItem('userRole', 'admin');
+                localStorage.setItem('userName', 'gbao08');
+                localStorage.setItem('userFirebaseKey', 'ADMIN_MASTER');
                 loginError.classList.add('hidden');
                 loginForm.reset();
                 checkAuth();
@@ -427,9 +455,9 @@
                     currentUserRole = 'qtv';
                     currentUserName = user;
                     currentUserFirebaseKey = matchedKey;
-                    sessionStorage.setItem('userRole', 'qtv');
-                    sessionStorage.setItem('userName', user);
-                    sessionStorage.setItem('userFirebaseKey', matchedKey);
+                    localStorage.setItem('userRole', 'qtv');
+                    localStorage.setItem('userName', user);
+                    localStorage.setItem('userFirebaseKey', matchedKey);
                     loginError.classList.add('hidden');
                     loginForm.reset();
                     checkAuth();
@@ -446,13 +474,20 @@
             currentUserRole = null;
             currentUserName = '';
             currentUserFirebaseKey = '';
-            sessionStorage.removeItem('userRole');
-            sessionStorage.removeItem('userName');
-            sessionStorage.removeItem('userFirebaseKey');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userFirebaseKey');
             checkAuth();
         });
 
         // ⚙️ CHỨC NĂNG TỰ ĐỔI TÀI KHOẢN VÀ PASS CỦA CHÍNH MÌNH KHI VÀO WEB
+        const profileModal = document.getElementById('profileModal');
+        const btnOpenProfile = document.getElementById('btnOpenProfile');
+        const btnCancelProfile = document.getElementById('btnCancelProfile');
+        const profileForm = document.getElementById('profileForm');
+        const profileUser = document.getElementById('profileUser');
+        const profilePass = document.getElementById('profilePass');
+
         btnOpenProfile.addEventListener('click', async () => {
             if (currentUserRole === 'admin') {
                 profileUser.value = currentUserName;
@@ -494,7 +529,7 @@
                 password: newPass
             }).then(() => {
                 currentUserName = newUser;
-                sessionStorage.setItem('userName', newUser);
+                localStorage.setItem('userName', newUser);
                 alert("Thay đổi tài khoản của bạn thành công! Hệ thống sẽ ghi nhận phiên mới.");
                 profileModal.classList.add('hidden');
                 profileModal.classList.remove('flex');
@@ -525,21 +560,20 @@
 
             dataToRender.forEach((acc) => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-850/40 transition duration-100";
+                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition duration-100";
                 tr.innerHTML = `
                     <td class="p-3 text-gray-900 dark:text-gray-100 font-semibold">${escapeHtml(acc.user)}</td>
                     <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
                     <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || 'Chưa ghi chú')}</span></td>
                     <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-pass="${escapeHtml(acc.pass)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer" title="Xuất acc & Auto Copy">
-                            <i class="fa-solid fa-box-open"></i>
+                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-pass="${escapeHtml(acc.pass)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer transform active:scale-95 transition" title="Xuất acc & Auto Copy">
+                            <i class="fa-solid fa-box-open text-base"></i>
                         </button>
                     </td>
                 `;
                 accTableBody.appendChild(tr);
             });
 
-            // 📤 LOGIC XUẤT ACC + TỰ ĐỘNG SAO CHÉP + BÁO TELEGRAM (CẢ TK VÀ MK)
             document.querySelectorAll('.btn-delete-acc').forEach(button => {
                 button.addEventListener('click', function() {
                     const accId = this.getAttribute('data-id');
@@ -549,7 +583,6 @@
                     
                     if(confirm(`Xác nhận xuất tài khoản ${accUser} ra khỏi hệ thống?\n(Hệ thống tự động copy và báo thông tin về Telegram)`)) {
                         
-                        // 1. Thực hiện Sao chép chuỗi "Tài khoản|Mật khẩu" vào bộ nhớ Clipboard máy
                         const textToCopy = `${accUser}|${accPass}`;
                         navigator.clipboard.writeText(textToCopy).then(() => {
                             console.log("Đã sao chép thành công định dạng tài khoản|mật khẩu");
@@ -562,11 +595,12 @@
                             textArea.remove();
                         });
 
-                        // 2. Tiến hành xóa acc khỏi cơ sở dữ liệu Firebase
+                        // Thực hiện ghi nhận vào Lịch sử cục bộ trên trình duyệt (Local History)
+                        saveToLocalHistory(accUser, accPass, accMp);
+
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             
-                            // Cấu trúc nội dung tin nhắn gửi về Telegram chứa cả Tài khoản, Mật khẩu và số MP
                             const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                                         `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
                                         `📧 *Tài khoản:* \`${accUser}\`\n` +
@@ -579,6 +613,52 @@
                 });
             });
         }
+
+        // ⚙️ LOGIC LƯU VÀ HIỂN THỊ LỊCH SỬ XUẤT ACC
+        function saveToLocalHistory(user, pass, mp) {
+            let currentHistory = JSON.parse(localStorage.getItem('acc_export_history')) || [];
+            const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
+            
+            const item = {
+                time: timeString,
+                operator: currentUserName,
+                account: `${user} | ${pass}`,
+                info: mp
+            };
+            
+            currentHistory.unshift(item); // Thêm lên đầu danh sách
+            if(currentHistory.length > 50) currentHistory.pop(); // Giới hạn tối đa 50 bản ghi cho nhẹ máy
+            localStorage.setItem('acc_export_history', JSON.stringify(currentHistory));
+            renderHistoryTable();
+        }
+
+        function renderHistoryTable() {
+            const currentHistory = JSON.parse(localStorage.getItem('acc_export_history')) || [];
+            if(currentHistory.length === 0) {
+                historyTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Chưa có dữ liệu xuất acc nào trên trình duyệt này.</td></tr>`;
+                return;
+            }
+            
+            historyTableBody.innerHTML = '';
+            currentHistory.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/20";
+                tr.innerHTML = `
+                    <td class="p-3 text-gray-400 whitespace-nowrap">${item.time}</td>
+                    <td class="p-3 font-bold text-amber-600 dark:text-amber-400">${escapeHtml(item.operator)}</td>
+                    <td class="p-3 font-mono select-text font-medium">${escapeHtml(item.account)}</td>
+                    <td class="p-3"><span class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-[11px]">${escapeHtml(item.info)}</span></td>
+                `;
+                historyTableBody.appendChild(tr);
+            });
+        }
+
+        btnClearHistory.addEventListener('click', () => {
+            if(confirm("Bạn có chắc muốn xóa sạch toàn bộ danh sách nhật ký hiển thị trên thiết bị này không?")) {
+                localStorage.removeItem('acc_export_history');
+                renderHistoryTable();
+            }
+        });
 
         // 📥 LOGIC UP ACC
         document.getElementById('accForm').addEventListener('submit', (e) => {
