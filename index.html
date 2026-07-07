@@ -218,7 +218,6 @@
 
         <!-- PAGE 2: CÀI ĐẶT -->
         <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Cấu hình phân quyền nhân sự -->
             <div class="space-y-6 h-fit">
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-purple-600 dark:text-purple-400">
@@ -239,7 +238,6 @@
                     </form>
                 </div>
 
-                <!-- ⚙️ THÊM MỚI: BẢNG ĐIỀU HÀNH THÊM MỐC BÁO GIỜ LẺ DÀNH CHO ADMIN -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-amber-600 dark:text-amber-400">
                         <i class="fa-solid fa-business-time mr-2"></i>Thêm Mốc Báo Giờ Lẻ
@@ -266,9 +264,7 @@
                 </div>
             </div>
 
-            <!-- Khối danh sách quản lý -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Thống kê & Danh sách nhân sự -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
                         <div>
@@ -293,7 +289,6 @@
                     </div>
                 </div>
 
-                <!-- ⚙️ THÊM MỚI: DANH SÁCH MỐC GIỜ ĐÃ CÀI ĐẶT TRÊN HỆ THỐNG -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                         <i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i> Các Mốc Giờ Lẻ Đang Bật Cảnh Báo
@@ -373,7 +368,7 @@
         const dbRef = ref(database, 'accounts');
         const usersRef = ref(database, 'users');
         const historyRef = ref(database, 'history'); 
-        const timersRef = ref(database, 'timers'); // Khởi tạo nhánh cấu hình mốc giờ
+        const timersRef = ref(database, 'timers'); 
 
         const TELEGRAM_TOKEN = "8811045334:AAHHk2xG3gEHY-Ez9HJOdrtkWTzUihvFsCw";
         const TELEGRAM_CHAT_ID = "-1003941908120";
@@ -416,11 +411,12 @@
         let currentUserName = localStorage.getItem('userName') || '';
         let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
         let localAccCache = [];
-        let localTimerCache = []; // Bộ nhớ đệm danh sách mốc giờ lẻ được Admin nạp lên
+        let localTimerCache = []; 
         let isFirstLoadFinished = false;
         let audioContext = null;
         let lastNotifiedMinute = -1; 
 
+        // 🔔 SỬA ĐỔI: KHI BẤM NÚT SẼ GỬI THÔNG BÁO VỀ TELEGRAM CHO ADMIN
         btnEnableAudio.addEventListener('click', () => {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -428,6 +424,10 @@
             btnEnableAudio.className = "bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-900/40 flex items-center gap-1.5 cursor-pointer";
             btnEnableAudio.innerHTML = `<i class="fa-solid fa-volume-high"></i> Định giờ đã sẵn sàng`;
             playBeep(440, 0.1);
+
+            // Gửi thông báo về Telegram
+            const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
+            sendTelegramNotification(`🔊 *THÔNG BÁO TRẠNG THÁI ĐỊNH GIỜ*\n👤 *Người thực hiện:* \`${currentUserName.toUpperCase()}\`\n⚙️ *Hành động:* Đã kích hoạt bộ âm thanh báo động giờ lẻ trên trình duyệt thành công.\n⏰ *Thời gian:* \`${timeString}\``);
         });
 
         function playBeep(frequency = 587.33, duration = 0.3) {
@@ -444,17 +444,14 @@
             } catch (e) { console.error("Lỗi âm thanh:", e); }
         }
 
-        // 🕒 QUÉT MỐC GIỜ THỜI GIAN THỰC TỪ DB MÀ ADMIN ĐÃ THÊM
         function startTimerCheck() {
             setInterval(() => {
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentMin = now.getMinutes();
 
-                // Chỉ quét cảnh báo ở GIỜ LẺ
                 if (currentHour % 2 !== 0) {
                     if (currentMin !== lastNotifiedMinute) {
-                        // Tìm kiếm mốc cài đặt khớp với phút hiện tại
                         const activeTimer = localTimerCache.find(t => parseInt(t.alertMin) === currentMin);
                         if (activeTimer) {
                             triggerTimeAlert(activeTimer.name, activeTimer.targetMin, currentHour);
@@ -477,7 +474,6 @@
             sendTelegramNotification(`⚠️ *HỆ THỐNG CẢNH BÁO GIỜ LẺ DYNAMIC*\n🔔 Sắp đến giờ mốc: *${name.toUpperCase()}*\n⏰ Thời gian mốc chuẩn: \`${hour}:${targetMinute}\`\n📌 Vui lòng kiểm tra và chuẩn bị sẵn sàng!`);
         }
 
-        // LẮNG NGHE REALTIME DANH SÁCH MỐC GIỜ ĐƯỢC ADMIN CÀI ĐẶT
         onValue(timersRef, (snapshot) => {
             const data = snapshot.val();
             localTimerCache = [];
@@ -514,7 +510,6 @@
             }
         });
 
-        // FORM LƯU MỐC GIỜ MỚI LÊN FIREBASE CLOUD (CHỈ ADMIN)
         timerConfigForm.addEventListener('submit', (e) => {
             e.preventDefault();
             if (currentUserRole !== 'admin') {
@@ -580,7 +575,7 @@
                 mainContent.classList.remove('hidden');
                 adminNav.classList.remove('hidden');
                 btnClearHistory.classList.remove('hidden'); 
-                timerConfigForm.parentElement.classList.remove('hidden'); // Hiện panel cài đặt giờ cho Admin
+                timerConfigForm.parentElement.classList.remove('hidden'); 
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/40";
                 roleBadge.innerHTML = `Admin`;
                 switchTab('acc');
@@ -589,7 +584,7 @@
                 mainContent.classList.remove('hidden');
                 adminNav.classList.add('hidden');
                 btnClearHistory.classList.add('hidden');
-                timerConfigForm.parentElement.classList.add('hidden'); // Giấu panel cài đặt giờ với QTV thường
+                timerConfigForm.parentElement.classList.add('hidden'); 
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900/40";
                 roleBadge.innerHTML = `QTV`;
                 switchTab('acc');
@@ -680,7 +675,7 @@
             const renderList = historyList.slice(0, 100);
             renderList.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/20 border-b border-gray-100 dark:border-gray-800/50 transition duration-200";
+                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-850/20 border-b border-gray-100 dark:border-gray-800/50 transition duration-200";
                 const timeBadge = `<span class="bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 px-2 py-1 rounded-lg font-semibold text-[11px] whitespace-nowrap"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(item.time)}</span>`;
                 tr.innerHTML = `
                     <td class="p-3 whitespace-nowrap">${timeBadge}</td>
