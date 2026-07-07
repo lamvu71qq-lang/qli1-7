@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -43,19 +43,17 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
 
-    <!-- KHU VỰC THÔNG BÁO POPUP KHI ĐẾN GIỜ -->
     <div id="alertPopup" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between hidden animate-bounce">
         <div class="flex items-center gap-3">
             <i class="fa-solid fa-triangle-exclamation text-2xl animate-pulse"></i>
             <div>
-                <p class="font-black text-sm uppercase tracking-wide">CẢNH BÁO SẮP ĐẾN GIỜ (SỚM 5P)!</p>
+                <p class="font-black text-sm uppercase tracking-wide">CẢNH BÁO SẮP ĐẾN GIỜ (BÁO TRƯỚC 3P)!</p>
                 <p id="alertPopupText" class="text-xs font-bold opacity-90 mt-0.5"></p>
             </div>
         </div>
         <button onclick="document.getElementById('alertPopup').classList.add('hidden')" class="bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">Đóng</button>
     </div>
 
-    <!-- ================= 🔒 MÀN HÌNH ĐĂNG NHẬP BẮT BUỘC 🔒 ================= -->
     <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
         <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative transform transition-all duration-300">
             
@@ -91,9 +89,7 @@
         </div>
     </div>
 
-    <!-- ================= GIAO DIỆN CHÍNH (Sau khi đăng nhập) ================= -->
     <div id="mainContent" class="hidden max-w-6xl mx-auto px-4 pt-6">
-        <!-- Header Topbar -->
         <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 gap-4 transition-all">
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
@@ -106,9 +102,8 @@
             </div>
             
             <div class="flex items-center gap-2">
-                <!-- NÚT BẬT ÂM THANH THÔNG BÁO -->
                 <button id="btnEnableAudio" class="bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-amber-200 dark:border-amber-900/40 flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-volume-high"></i> Kích hoạt âm báo giờ lẻ
+                    <i class="fa-solid fa-volume-high"></i> Kích hoạt âm báo định giờ
                 </button>
                 <button onclick="toggleTheme()" class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 p-2.5 rounded-xl hover:text-blue-500 transition cursor-pointer">
                     <i class="fa-solid fa-moon dark:hidden"></i>
@@ -126,9 +121,7 @@
             </div>
         </header>
 
-        <!-- PAGE 1: KHO ACC -->
         <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Form Thêm Mới -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
@@ -155,7 +148,6 @@
                 </form>
             </div>
 
-            <!-- Khối Bảng hiển thị -->
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
@@ -187,7 +179,6 @@
                     </div>
                 </div>
 
-                <!-- 📜 KHO LỊCH SỬ ĐỒNG BỘ CLOUD REALTIME -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
                     <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
@@ -216,7 +207,6 @@
             </div>
         </div>
 
-        <!-- PAGE 2: CÀI ĐẶT -->
         <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="space-y-6 h-fit">
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
@@ -240,7 +230,7 @@
 
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-amber-600 dark:text-amber-400">
-                        <i class="fa-solid fa-business-time mr-2"></i>Thêm Mốc Báo Giờ Lẻ
+                        <i class="fa-solid fa-business-time mr-2"></i>Thêm Mốc Báo Giờ (Chẵn/Lẻ)
                     </h2>
                     <form id="timerConfigForm" class="space-y-4">
                         <div>
@@ -249,14 +239,17 @@
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phút Hú Còi (Báo sớm)</label>
-                                <input type="number" id="timerAlertMin" required min="0" max="59" placeholder="52" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Giờ chuẩn mốc</label>
+                                <input type="number" id="timerTargetHour" required min="0" max="23" placeholder="17" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phút Chuẩn Mốc</label>
-                                <input type="number" id="timerTargetMin" required min="0" max="59" placeholder="57" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phút chuẩn mốc</label>
+                                <input type="number" id="timerTargetMin" required min="0" max="59" placeholder="00" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
                             </div>
                         </div>
+                        <p class="text-[11px] font-medium text-amber-600 dark:text-amber-400 mt-1 italic">
+                            💡 Hệ thống tự động trừ lùi 3 phút để báo động trước.
+                        </p>
                         <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md text-xs uppercase tracking-wider">
                             Lưu Mốc Báo Giờ Mới
                         </button>
@@ -291,15 +284,15 @@
 
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
                     <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                        <i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i> Các Mốc Giờ Lẻ Đang Bật Cảnh Báo
+                        <i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i> Các Mốc Giờ Đang Bật Cảnh Báo Hệ Thống
                     </h2>
                     <div class="overflow-x-auto rounded-xl">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase border-b border-gray-100 dark:border-gray-800">
                                     <th class="p-3">Tên Mốc</th>
-                                    <th class="p-3 text-center">Phút Hú Còi (Báo sớm)</th>
-                                    <th class="p-3 text-center">Phút Chạy Mốc</th>
+                                    <th class="p-3 text-center">Mốc chuẩn</th>
+                                    <th class="p-3 text-center">Thời gian còi hú (Đã lùi 3p)</th>
                                     <th class="p-3 text-center">Xóa mốc</th>
                                 </tr>
                             </thead>
@@ -313,7 +306,6 @@
         </div>
     </div>
 
-    <!-- ================= MODAL PROFILE ================= -->
     <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
@@ -415,8 +407,9 @@
         let isFirstLoadFinished = false;
         let audioContext = null;
         let lastNotifiedMinute = -1; 
+        let lastNotifiedHour = -1;
 
-        // 🔔 SỬA ĐỔI: KHI BẤM NÚT SẼ GỬI THÔNG BÁO VỀ TELEGRAM CHO ADMIN
+        // KÍCH HOẠT ÂM THANH ĐỊNH GIỜ & BÁO ADMIN QUA TELEGRAM
         btnEnableAudio.addEventListener('click', () => {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -425,9 +418,8 @@
             btnEnableAudio.innerHTML = `<i class="fa-solid fa-volume-high"></i> Định giờ đã sẵn sàng`;
             playBeep(440, 0.1);
 
-            // Gửi thông báo về Telegram
             const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
-            sendTelegramNotification(`🔊 *THÔNG BÁO TRẠNG THÁI ĐỊNH GIỜ*\n👤 *Người thực hiện:* \`${currentUserName.toUpperCase()}\`\n⚙️ *Hành động:* Đã kích hoạt bộ âm thanh báo động giờ lẻ trên trình duyệt thành công.\n⏰ *Thời gian:* \`${timeString}\``);
+            sendTelegramNotification(`🔊 *THÔNG BÁO TRẠNG THÁI ĐỊNH GIỜ*\n👤 *Người thực hiện:* \`${currentUserName.toUpperCase()}\`\n⚙️ *Hành động:* Đã kích hoạt bộ âm thanh báo động thành công.\n⏰ *Thời gian:* \`${timeString}\``);
         });
 
         function playBeep(frequency = 587.33, duration = 0.3) {
@@ -444,26 +436,31 @@
             } catch (e) { console.error("Lỗi âm thanh:", e); }
         }
 
+        // KIỂM TRA ĐỊNH GIỜ TOÀN DIỆN (CHẤN & LẺ) TỰ ĐỘNG CHẠY MỖI GIÂY
         function startTimerCheck() {
             setInterval(() => {
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentMin = now.getMinutes();
 
-                if (currentHour % 2 !== 0) {
-                    if (currentMin !== lastNotifiedMinute) {
-                        const activeTimer = localTimerCache.find(t => parseInt(t.alertMin) === currentMin);
-                        if (activeTimer) {
-                            triggerTimeAlert(activeTimer.name, activeTimer.targetMin, currentHour);
-                        }
+                // Kiểm tra xem phút hiện tại và giờ hiện tại có trùng với mốc hú còi nào không
+                if (currentMin !== lastNotifiedMinute || currentHour !== lastNotifiedHour) {
+                    const activeTimer = localTimerCache.find(t => parseInt(t.alertHour) === currentHour && parseInt(t.alertMin) === currentMin);
+                    
+                    if (activeTimer) {
+                        lastNotifiedMinute = currentMin;
+                        lastNotifiedHour = currentHour;
+                        triggerTimeAlert(activeTimer.name, activeTimer.targetHour, activeTimer.targetMin);
                     }
                 }
             }, 1000); 
         }
 
-        function triggerTimeAlert(name, targetMinute, hour) {
-            lastNotifiedMinute = new Date().getMinutes();
-            const message = `⏳ Sắp đến mốc [${hour}h${targetMinute}m]: ${name.toUpperCase()} (Đang chạy báo động!)`;
+        function triggerTimeAlert(name, targetHour, targetMinute) {
+            const displayHour = String(targetHour).padStart(2, '0');
+            const displayMin = String(targetMinute).padStart(2, '0');
+            
+            const message = `⏳ Sắp đến mốc [${displayHour}:${displayMin}]: ${name.toUpperCase()} (Hệ thống đang hú còi!)`;
             alertPopupText.innerText = message;
             alertPopup.classList.remove('hidden');
 
@@ -471,9 +468,10 @@
             setTimeout(() => playBeep(659.25, 0.2), 300);
             setTimeout(() => playBeep(880.00, 0.4), 600);
 
-            sendTelegramNotification(`⚠️ *HỆ THỐNG CẢNH BÁO GIỜ LẺ DYNAMIC*\n🔔 Sắp đến giờ mốc: *${name.toUpperCase()}*\n⏰ Thời gian mốc chuẩn: \`${hour}:${targetMinute}\`\n📌 Vui lòng kiểm tra và chuẩn bị sẵn sàng!`);
+            sendTelegramNotification(`⚠️ *HỆ THỐNG CẢNH BÁO GIỜ ĐỊNH ĐỊNH VỊ*\n🔔 Sắp đến giờ mốc: *${name.toUpperCase()}*\n⏰ Thời gian mốc chuẩn: \`${displayHour}:${displayMin}\`\n📌 Trạng thái: Đã báo trước 3 phút. Vui lòng chuẩn bị!`);
         }
 
+        // ĐỒNG BỘ DANH SÁCH MỐC GIỜ TỪ FIREBASE CLOUD
         onValue(timersRef, (snapshot) => {
             const data = snapshot.val();
             localTimerCache = [];
@@ -483,12 +481,17 @@
                 Object.keys(data).forEach(key => {
                     localTimerCache.push({ id: key, ...data[key] });
                     
+                    const tH = String(data[key].targetHour).padStart(2, '0');
+                    const tM = String(data[key].targetMin).padStart(2, '0');
+                    const aH = String(data[key].alertHour).padStart(2, '0');
+                    const aM = String(data[key].alertMin).padStart(2, '0');
+
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-gray-50 dark:hover:bg-gray-850/40 transition duration-100";
                     tr.innerHTML = `
                         <td class="p-3 text-gray-900 dark:text-gray-100 font-bold uppercase">${escapeHtml(data[key].name)}</td>
-                        <td class="p-3 text-center text-red-600 dark:text-red-400 font-mono font-black">${data[key].alertMin}</td>
-                        <td class="p-3 text-center text-green-600 dark:text-green-400 font-mono font-black">${data[key].targetMin}</td>
+                        <td class="p-3 text-center text-green-600 dark:text-green-400 font-mono font-black">${tH}:${tM}</td>
+                        <td class="p-3 text-center text-red-600 dark:text-red-400 font-mono font-black">${aH}:${aM}</td>
                         <td class="p-3 text-center">
                             <button data-id="${key}" class="btn-delete-timer text-red-500 hover:text-red-700 p-1 cursor-pointer transition transform active:scale-90">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -506,10 +509,11 @@
                     });
                 });
             } else {
-                timerTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Chưa có cấu hình mốc giờ nào. Hệ thống tạm dừng cảnh báo ngầm.</td></tr>`;
+                timerTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Chưa có cấu hình mốc giờ nào.</td></tr>`;
             }
         });
 
+        // XỬ LÝ FORM THÊM MỐC: TỰ ĐỘNG TRỪ 3 PHÚT TRƯỚC KHI LƯU LÊN FIREBASE
         timerConfigForm.addEventListener('submit', (e) => {
             e.preventDefault();
             if (currentUserRole !== 'admin') {
@@ -517,12 +521,24 @@
                 return;
             }
             const name = document.getElementById('timerName').value.trim();
-            const alertMin = document.getElementById('timerAlertMin').value.trim();
-            const targetMin = document.getElementById('timerTargetMin').value.trim();
+            const targetHour = parseInt(document.getElementById('timerTargetHour').value.trim());
+            const targetMin = parseInt(document.getElementById('timerTargetMin').value.trim());
 
-            set(push(timersRef), { name, alertMin, targetMin }).then(() => {
+            // Thuật toán tự trừ lùi 3 phút chính xác kể cả thời điểm giáp ranh giờ mới
+            let alertHour = targetHour;
+            let alertMin = targetMin - 3;
+
+            if (alertMin < 0) {
+                alertMin = 60 + alertMin; // Ví dụ: 00 - 3 = phút 57
+                alertHour = alertHour - 1;
+                if (alertHour < 0) {
+                    alertHour = 23; // Sang ngày hôm trước
+                }
+            }
+
+            set(push(timersRef), { name, targetHour, targetMin, alertHour, alertMin }).then(() => {
                 timerConfigForm.reset();
-                alert(`Đã lưu và đồng bộ mốc [${name.toUpperCase()}] thành công lên hệ thống!`);
+                alert(`Đã lưu mốc [${name.toUpperCase()} - Chuẩn: ${String(targetHour).padStart(2, '0')}:${String(targetMin).padStart(2, '0')}]. Hệ thống sẽ tự hú còi vào lúc ${String(alertHour).padStart(2, '0')}:${String(alertMin).padStart(2, '0')}!`);
             });
         });
 
