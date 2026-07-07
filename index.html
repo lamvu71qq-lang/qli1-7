@@ -43,7 +43,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
 
-    <!-- ================= 🔒 MÀN HÌNH ĐĂNG NHẬP BẮT BUỘC 🔒 ================= -->
     <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
         <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative transform transition-all duration-300">
             
@@ -79,9 +78,7 @@
         </div>
     </div>
 
-    <!-- ================= GIAO DIỆN CHÍNH (Sau khi đăng nhập) ================= -->
     <div id="mainContent" class="hidden max-w-6xl mx-auto px-4 pt-6">
-        <!-- Header Topbar -->
         <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 gap-4 transition-all">
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
@@ -110,9 +107,7 @@
             </div>
         </header>
 
-        <!-- PAGE 1: KHO ACC -->
         <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Form Thêm Mới -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
@@ -136,7 +131,6 @@
                 </form>
             </div>
 
-            <!-- Khối Bảng hiển thị -->
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
@@ -168,7 +162,6 @@
                     </div>
                 </div>
 
-                <!-- 📜 KHO LỊCH SỬ ĐỒNG BỘ CLOUD REALTIME -->
                 <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
                     <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
@@ -182,10 +175,10 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-amber-50/50 dark:bg-amber-950/20 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
-                                    <th class="p-3">Thời gian</th>
-                                    <th class="p-3">Người xuất</th>
-                                    <th class="p-3">Tài khoản | Pass</th>
-                                    <th class="p-3">Thông tin</th>
+                                    <th class="p-3 w-[160px]">Thời gian lấy</th>
+                                    <th class="p-3 w-[140px]">Người xuất kho</th>
+                                    <th class="p-3">Tài khoản | Mật khẩu</th>
+                                    <th class="p-3">Thông tin MP</th>
                                 </tr>
                             </thead>
                             <tbody id="historyTableBody" class="text-xs divide-y divide-gray-100 dark:divide-gray-800 text-gray-600 dark:text-gray-300">
@@ -197,7 +190,6 @@
             </div>
         </div>
 
-        <!-- PAGE 2: CÀI ĐẶT -->
         <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-purple-600 dark:text-purple-400">
@@ -244,7 +236,6 @@
         </div>
     </div>
 
-    <!-- ================= MODAL PROFILE ================= -->
     <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
@@ -282,7 +273,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
+        
         const firebaseConfig = {
             apiKey: "AIzaSyCcD_AORL2MJmgGt46H_vZp8-eQsLI3GaA",
             authDomain: "qli-kho-ec.firebaseapp.com",
@@ -296,15 +287,13 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         
-        // Thêm node history trực tiếp lên Firebase Cloud
-        const dbRef = ref(database, 'accounts'); 
+        const dbRef = ref(database, 'accounts');
         const usersRef = ref(database, 'users');
         const historyRef = ref(database, 'history'); 
 
         const TELEGRAM_TOKEN = "8811045334:AAHHk2xG3gEHY-Ez9HJOdrtkWTzUihvFsCw";
         const TELEGRAM_CHAT_ID = "-1003941908120";
-
-        // Biến giao diện
+        
         const loginScreen = document.getElementById('loginScreen');
         const mainContent = document.getElementById('mainContent');
         const loginForm = document.getElementById('loginForm');
@@ -365,7 +354,7 @@
                 loginScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 adminNav.classList.remove('hidden');
-                btnClearHistory.classList.remove('hidden'); // Admin mới thấy nút xóa lịch sử Server
+                btnClearHistory.classList.remove('hidden'); 
                 roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/40";
                 roleBadge.innerHTML = `Admin`;
                 switchTab('acc');
@@ -422,7 +411,8 @@
                     });
                 }
                 if (matched) {
-                    currentUserRole = 'qtv'; currentUserName = user; currentUserFirebaseKey = matchedKey;
+                    currentUserRole = 'qtv';
+                    currentUserName = user; currentUserFirebaseKey = matchedKey;
                     localStorage.setItem('userRole', 'qtv'); localStorage.setItem('userName', user); localStorage.setItem('userFirebaseKey', matchedKey);
                     loginError.classList.add('hidden'); loginForm.reset(); checkAuth(); triggerWelcomeEmojis('qtv');
                 } else { loginError.classList.remove('hidden'); }
@@ -451,27 +441,29 @@
         onValue(historyRef, (snapshot) => {
             const data = snapshot.val();
             historyTableBody.innerHTML = '';
+            
             if (!data) {
-                historyTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Chưa có lịch sử xuất acc nào trên hệ thống Cloud.</td></tr>`;
+                historyTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400"><i class="fa-solid fa-folder-open mr-1"></i> Chưa có lịch sử xuất acc nào trên hệ thống Cloud.</td></tr>`;
                 return;
             }
             
-            // Sắp xếp lịch sử mới nhất lên đầu
             const historyList = [];
             Object.keys(data).forEach(key => { historyList.push(data[key]); });
             historyList.reverse(); 
 
-            // Giới hạn hiển thị tối đa 100 dòng cho mượt giao diện
             const renderList = historyList.slice(0, 100);
 
             renderList.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition duration-700";
+                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/20 border-b border-gray-100 dark:border-gray-800/50 transition duration-200";
+                
+                const timeBadge = `<span class="bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 px-2 py-1 rounded-lg font-semibold text-[11px] whitespace-nowrap"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(item.time)}</span>`;
+                
                 tr.innerHTML = `
-                    <td class="p-3 text-gray-400 whitespace-nowrap">${item.time}</td>
-                    <td class="p-3 font-bold text-amber-600 dark:text-amber-400">${escapeHtml(item.operator)}</td>
-                    <td class="p-3 font-mono select-text font-medium">${escapeHtml(item.account)}</td>
-                    <td class="p-3"><span class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-[11px] font-semibold">${escapeHtml(item.info)}</span></td>
+                    <td class="p-3 whitespace-nowrap">${timeBadge}</td>
+                    <td class="p-3 font-bold text-amber-600 dark:text-amber-400"><i class="fa-solid fa-user-check text-xs mr-1 opacity-70"></i>${escapeHtml(item.operator)}</td>
+                    <td class="p-3 font-mono select-text font-medium text-gray-700 dark:text-gray-300">${escapeHtml(item.account)}</td>
+                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 px-1.5 py-0.5 rounded text-[11px] font-semibold border border-purple-100 dark:border-purple-900/30">${escapeHtml(item.info)}</span></td>
                 `;
                 historyTableBody.appendChild(tr);
             });
@@ -488,7 +480,6 @@
                 emptyState.classList.remove('hidden'); return;
             }
             emptyState.classList.add('hidden');
-
             dataToRender.forEach((acc) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition duration-100";
@@ -520,7 +511,6 @@
                             textArea.select(); document.execCommand('copy'); textArea.remove();
                         });
 
-                        // ĐẨY LỊCH SỬ THẲNG LÊN SERVER CLOUD FIREBASE
                         const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
                         const newHistoryRef = push(historyRef);
                         set(newHistoryRef, {
@@ -529,7 +519,6 @@
                             account: `${accUser} | ${accPass}`,
                             info: accMp
                         });
-
                         remove(ref(database, 'accounts/' + accId)).then(() => {
                             const currentRemain = localAccCache.length - 1;
                             const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
@@ -545,7 +534,6 @@
             });
         }
 
-        // CHỈ ROOT ADMIN MỚI ĐƯỢC PHÉP CLEAR KHO LỊCH SỬ TRÊN CLOUD
         btnClearHistory.addEventListener('click', () => {
             if(currentUserRole !== 'admin') return;
             if(confirm("CẢNH BÁO: Hành động này sẽ XÓA SẠCH toàn bộ kho nhật ký trên hệ thống Firebase Cloud mãi mãi. Bạn có chắc chắn muốn xóa?")) {
@@ -553,7 +541,6 @@
             }
         });
 
-        // UP ACC FORM
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('accUser').value.trim();
@@ -623,6 +610,7 @@
             }
             profileModal.classList.remove('hidden'); profileModal.classList.add('flex');
         });
+
         btnCancelProfile.addEventListener('click', () => { profileModal.classList.add('hidden'); profileModal.classList.remove('flex'); });
 
         function escapeHtml(str) {
