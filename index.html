@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -42,6 +42,17 @@
     </script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
+
+    <div id="alertPopup" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between hidden animate-bounce">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-2xl animate-pulse"></i>
+            <div>
+                <p class="font-black text-sm uppercase tracking-wide">CẢNH BÁO SẮP ĐẾN GIỜ (SỚM 5P)!</p>
+                <p id="alertPopupText" class="text-xs font-bold opacity-90 mt-0.5"></p>
+            </div>
+        </div>
+        <button onclick="document.getElementById('alertPopup').classList.add('hidden')" class="bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">Đóng</button>
+    </div>
 
     <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
         <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative transform transition-all duration-300">
@@ -91,6 +102,9 @@
             </div>
             
             <div class="flex items-center gap-2">
+                <button id="btnEnableAudio" class="bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-amber-200 dark:border-amber-900/40 flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-volume-high"></i> Kích hoạt âm báo giờ
+                </button>
                 <button onclick="toggleTheme()" class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 p-2.5 rounded-xl hover:text-blue-500 transition cursor-pointer">
                     <i class="fa-solid fa-moon dark:hidden"></i>
                     <i class="fa-solid fa-sun hidden dark:inline text-yellow-400"></i>
@@ -114,8 +128,11 @@
                 </h2>
                 <form id="accForm" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản</label>
-                        <input type="text" id="accUser" required placeholder="Nhập tài khoản" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản (Mail/SĐT)</label>
+                        <input type="text" id="accUser" required placeholder="Nhập tài khoản hoặc email" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
+                        <div id="duplicateAlert" class="hidden text-red-500 text-xs font-bold mt-1.5 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-xmark animate-pulse"></i> Tài khoản này đã tồn tại trong kho Live!
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu</label>
@@ -125,7 +142,7 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Thông tin MP</label>
                         <input type="text" id="accMp" required placeholder="Ví dụ: 82M MP..." class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
+                    <button type="submit" id="btnSubmitAcc" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
                         Đồng Bộ Lên Kho & Báo Bot
                     </button>
                 </form>
@@ -319,12 +336,99 @@
         const profileForm = document.getElementById('profileForm');
         const profileUser = document.getElementById('profileUser');
         const profilePass = document.getElementById('profilePass');
+        const btnEnableAudio = document.getElementById('btnEnableAudio');
+        const alertPopup = document.getElementById('alertPopup');
+        const alertPopupText = document.getElementById('alertPopupText');
+        const accUserInput = document.getElementById('accUser');
+        const duplicateAlert = document.getElementById('duplicateAlert');
+        const btnSubmitAcc = document.getElementById('btnSubmitAcc');
 
         let currentUserRole = localStorage.getItem('userRole') || null;
         let currentUserName = localStorage.getItem('userName') || '';
         let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
         let localAccCache = [];
         let isFirstLoadFinished = false;
+        let audioContext = null;
+        let lastNotifiedMinute = -1; 
+
+        // Hàm kích hoạt âm thanh khi Admin nhấn vào nút trên Header
+        btnEnableAudio.addEventListener('click', () => {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            btnEnableAudio.className = "bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-900/40 flex items-center gap-1.5 cursor-pointer";
+            btnEnableAudio.innerHTML = `<i class="fa-solid fa-volume-high"></i> Định giờ đã sẵn sàng`;
+            playBeep(440, 0.1);
+        });
+
+        // Hàm phát âm thanh Beep mặc định của trình duyệt
+        function playBeep(frequency = 587.33, duration = 0.3) {
+            if (!audioContext) return;
+            try {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            } catch (e) { console.error("Lỗi âm thanh:", e); }
+        }
+
+        // 🕒 BỘ ĐẾM THỜI GIAN NGẦM TỰ ĐỘNG BÁO TRƯỚC 5 PHÚT GIỜ LẺ
+        function startTimerCheck() {
+            setInterval(() => {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMin = now.getMinutes();
+
+                if (currentHour % 2 !== 0) {
+                    if (currentMin !== lastNotifiedMinute) {
+                        if (currentMin === 52) { triggerTimeAlert("cole", 57, currentHour); }
+                        if (currentMin === 19) { triggerTimeAlert("rái cá", 24, currentHour); }
+                        if (currentMin === 20) { triggerTimeAlert("zidane", 25, currentHour); }
+                    }
+                }
+            }, 10000); 
+        }
+
+        function triggerTimeAlert(name, targetMinute, hour) {
+            lastNotifiedMinute = new Date().getMinutes();
+            const message = `⏳ Sắp đến mốc [${hour}h${targetMinute}m]: ${name.toUpperCase()} (Còn đúng 5 phút)`;
+            alertPopupText.innerText = message;
+            alertPopup.classList.remove('hidden');
+
+            playBeep(659.25, 0.2);
+            setTimeout(() => playBeep(659.25, 0.2), 300);
+            setTimeout(() => playBeep(880.00, 0.4), 600);
+
+            sendTelegramNotification(`⚠️ *HỆ THỐNG CẢNH BÁO GIỜ LẺ (SỚM 5P)*\n🔔 Sắp đến giờ mốc: *${name}*\n⏰ Thời gian mốc chuẩn: \`${hour}:${targetMinute}\`\n📌 Vui lòng kiểm tra và chuẩn bị sẵn sàng!`);
+        }
+
+        // TÍNH NĂNG KIỂM TRA TRÙNG ACC KHI USER ĐANG GÕ (REALTIME CHECK)
+        accUserInput.addEventListener('input', () => {
+            const inputValue = accUserInput.value.trim().toLowerCase();
+            if(!inputValue) {
+                duplicateAlert.classList.add('hidden');
+                btnSubmitAcc.disabled = false;
+                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            // Quét xem dữ liệu user nhập vào có trùng với trường 'user' nào trong kho không
+            const isDuplicate = localAccCache.some(acc => acc.user.toLowerCase() === inputValue);
+
+            if(isDuplicate) {
+                duplicateAlert.classList.remove('hidden');
+                btnSubmitAcc.disabled = true; // Chặn bấm nút Up
+                btnSubmitAcc.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                duplicateAlert.classList.add('hidden');
+                btnSubmitAcc.disabled = false; // Mở khóa nút Up
+                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
 
         function sendTelegramNotification(message) {
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -547,8 +651,19 @@
             const pass = document.getElementById('accPass').value.trim();
             const mp = document.getElementById('accMp').value.trim();
 
+            // Thêm một lớp bảo vệ cuối trước khi thực sự ghi vào Firebase
+            const isDuplicate = localAccCache.some(acc => acc.user.toLowerCase() === user.toLowerCase());
+            if(isDuplicate) {
+                alert("Lỗi: Tài khoản này đã tồn tại trong hệ thống kho Live, không thể lưu trùng!");
+                return;
+            }
+
             set(push(dbRef), { user, pass, mp }).then(() => {
                 document.getElementById('accForm').reset();
+                duplicateAlert.classList.add('hidden');
+                btnSubmitAcc.disabled = false;
+                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
+                
                 const currentTotal = localAccCache.length + 1;
                 const msg = `📥 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
@@ -619,6 +734,7 @@
         }
 
         checkAuth();
+        startTimerCheck();
     </script>
 </body>
 </html>
