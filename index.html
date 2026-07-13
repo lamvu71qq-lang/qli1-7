@@ -1,91 +1,262 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <!-- [GIỮ NGUYÊN CÁC META TAG VÀ CSS CỦA BẠN] -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Trị & Thông Báo Telegram Cloud</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { -webkit-tap-highlight-color: transparent; user-select: none; } input { user-select: text; }</style>
+    <title>Quản Lý Kho Acc & Mốc Giờ</title>
+    <!-- Tailwind CSS để giao diện đẹp -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 để làm Popup chọn tính năng -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased">
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
 
-    <!-- [GIỮ NGUYÊN PHẦN LOGIN SCREEN VÀ CÁC DIV HIỂN THỊ KHÁC] -->
-    
-    <!-- FORM UP ACC (Đã thêm ô Ghi chú) -->
-    <form id="accForm" class="space-y-4">
-        <!-- [CÁC INPUT CŨ: User, Pass, MP] -->
-        <input type="text" id="accUser" required placeholder="Tài khoản" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
-        <input type="text" id="accPass" required placeholder="Mật khẩu" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
-        <input type="text" id="accMp" required placeholder="Thông tin MP" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
-        <input type="text" id="accNote" placeholder="Ghi chú cho acc..." class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
-        <button type="submit" id="btnSubmitAcc" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl">Đồng Bộ Lên Kho & Báo Bot</button>
-    </form>
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- KHU VỰC 1: QUẢN LÝ KHO ACC -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+                📦 Kho Tài Khoản Hiện Tại
+            </h2>
+            
+            <!-- Danh sách tài khoản hiển thị -->
+            <div id="accList" class="space-y-3">
+                <p class="text-gray-500 italic text-center">Đang tải dữ liệu tài khoản...</p>
+            </div>
+        </div>
 
-    <script type="module">
-        // [CÁC IMPORT CỦA BẠN]
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        
-        // ... (Cấu hình Firebase của bạn) ...
+        <!-- KHU VỰC 2: HÀNG ĐỢI LƯU TẠM (ĐỢI NOTE + BỘ ĐẾM GIỜ) -->
+        <div class="bg-yellow-50 p-6 rounded-lg shadow-md border border-yellow-200">
+            <h2 class="text-xl font-bold mb-2 text-yellow-800 flex items-center gap-2">
+                ⏳ Hàng Đợi Ghi Chú (Tạm thời)
+            </h2>
+            <p class="text-xs text-yellow-700 mb-4">Tài khoản được giữ lại ở đây để note thông tin. Có bộ đếm thời gian thực để bạn theo dõi thời gian xử lý.</p>
+            
+            <div id="tempQueueList" class="space-y-3">
+                <p class="text-gray-400 italic text-center text-sm">Chưa có tài khoản nào trong hàng đợi.</p>
+            </div>
+        </div>
+    </div>
 
-        // HÀM XỬ LÝ SUBMIT (Đã thêm Ghi chú & Đếm giờ)
-        document.getElementById('accForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = document.getElementById('accUser').value.trim();
-            const pass = document.getElementById('accPass').value.trim();
-            const mp = document.getElementById('accMp').value.trim();
-            const note = document.getElementById('accNote').value.trim();
-            const timeUp = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-            set(push(dbRef), { user, pass, mp, note, timeUp }).then(() => {
-                document.getElementById('accForm').reset();
-                // [GIỮ NGUYÊN LOGIC CŨ BÊN DƯỚI]
-                const currentTotal = localAccCache.length + 1;
-                const msg = `📥 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
-                            `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
-                            `📧 *Tài khoản:* \`${user}\`\n` +
-                            `🔑 *Mật khẩu:* \`${pass}\`\n` +
-                            `💎 *Thông tin MP:* ${mp}\n` +
-                            `📝 *Ghi chú:* ${note || 'Không có'}\n` +
-                            `⏰ *Giờ Up:* ${timeUp}\n` +
-                            `📈 *Tổng số lượng trong kho:* \`${currentTotal}\` acc.`;
-                sendTelegramNotification(msg);
+    <script>
+        // CẤU HÌNH FIREBASE CỦA BẠN
+        const firebaseConfig = {
+            databaseURL: "https://qli-kho-ec-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Mảng lưu trữ các mốc thời gian phục vụ bộ đếm chạy realtime
+        let activeTimers = {};
+
+        // 1. THEO DÕI KHO ACC CHÍNH
+        db.ref('accounts').on('value', (snapshot) => {
+            const accListDiv = document.getElementById('accList');
+            accListDiv.innerHTML = '';
+            const data = snapshot.val();
+
+            if (!data) {
+                accListDiv.innerHTML = `<p class="text-gray-500 italic text-center">Kho trống, vui lòng thêm tài khoản!</p>`;
+                return;
+            }
+
+            Object.keys(data).forEach(key => {
+                const acc = data[key];
+                accListDiv.innerHTML += `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 border rounded-lg gap-3">
+                        <div>
+                            <span class="font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold">${acc.type || 'Chưa phân loại'}</span>
+                            <p class="text-gray-700 font-medium mt-1 break-all">${acc.content}</p>
+                        </div>
+                        <button onclick="handleGetAcc('${key}', '${encodeURIComponent(acc.content)}', '${acc.type || ''}')" 
+                                class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+                            🔑 Lấy Acc
+                        </button>
+                    </div>
+                `;
             });
         });
 
-        // HÀM RENDER TABLE (Thêm nút Xuất với 2 chọn lựa)
-        function renderAccTable(dataToRender) {
-            accTableBody.innerHTML = '';
-            dataToRender.forEach((acc) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${acc.user}</td>
-                    <td>${acc.mp} <br> <span class="text-xs text-gray-500">${acc.note || ''}</span></td>
-                    <td class="text-blue-500">${acc.timeUp || ''}</td>
-                    <td><button class="btn-export" data-id="${acc.id}" data-acc="${acc.user}|${acc.pass}">Xuất</button></td>
-                `;
-                accTableBody.appendChild(tr);
+        // 2. THEO DÕI HÀNG ĐỢI LƯU TẠM (NOTE + TIMER)
+        db.ref('temp_queue').on('value', (snapshot) => {
+            const queueDiv = document.getElementById('tempQueueList');
+            queueDiv.innerHTML = '';
+            const data = snapshot.val();
+
+            if (!data) {
+                queueDiv.innerHTML = `<p class="text-gray-400 italic text-center text-sm">Chưa có tài khoản nào trong hàng đợi.</p>`;
+                // Xóa bỏ tất cả bộ đếm thời gian cũ nếu hàng đợi trống
+                Object.keys(activeTimers).forEach(k => clearInterval(activeTimers[k]));
+                activeTimers = {};
+                return;
+            }
+
+            // Dọn dẹp các bộ đếm không còn tồn tại trong data mới
+            Object.keys(activeTimers).forEach(k => {
+                if (!data[k]) {
+                    clearInterval(activeTimers[k]);
+                    delete activeTimers[k];
+                }
             });
 
-            // Logic chọn 2 mục khi xuất
-            document.querySelectorAll('.btn-export').forEach(btn => {
-                btn.onclick = () => {
-                    const id = btn.getAttribute('data-id');
-                    const accInfo = btn.getAttribute('data-acc');
-                    
-                    // Logic chọn 2 mục theo ý bạn
-                    if(confirm("1. OK = Copy & Xoá\n2. Cancel = Copy & Đưa vào mục chờ (Note lại)")) {
-                        navigator.clipboard.writeText(accInfo);
-                        remove(ref(database, 'accounts/' + id));
-                    } else {
-                        navigator.clipboard.writeText(accInfo);
-                        // Đẩy vào nhánh 'waiting' để note lại
-                        set(ref(database, 'waiting/' + id), { info: accInfo, time: new Date().toLocaleString() });
-                        remove(ref(database, 'accounts/' + id));
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                const movedAt = item.movedAt || Date.now();
+
+                queueDiv.innerHTML += `
+                    <div class="p-4 bg-white border border-yellow-300 rounded-lg shadow-sm space-y-3">
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <p class="text-gray-800 font-mono text-sm break-all font-semibold bg-gray-100 p-2 rounded flex-1 min-w-[200px]">${item.content}</p>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded font-bold">${item.type || 'Acc'}</span>
+                                <!-- Vị trí hiển thị bộ đếm thời gian -->
+                                <span id="timer-${key}" class="text-xs bg-gray-800 text-green-400 font-mono px-2 py-0.5 rounded shadow">⏱️ 00:00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Hệ thống 2 ô ghi chú -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-500">Mục ghi chú 1 (Lý do/Trạng thái):</label>
+                                <input id="note1-${key}" type="text" placeholder="Ví dụ: Acc lỗi, Sai pass..." value="${item.note || ''}" 
+                                       class="w-full mt-0.5 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-500">Mục ghi chú 2 (Thông tin thêm):</label>
+                                <input id="note2-${key}" type="text" placeholder="Ví dụ: Đã đổi mail, Khách nguyễn văn a..." value="${item.note2 || ''}" 
+                                       class="w-full mt-0.5 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2 border-t border-dashed border-gray-200">
+                            <div class="space-x-4 text-xs">
+                                <button onclick="copyToClipboard('${encodeURIComponent(item.content)}')" class="text-blue-600 font-medium hover:underline">📋 Copy lại</button>
+                                <button onclick="saveNotes('${key}')" class="text-green-600 font-bold hover:underline">💾 Lưu 2 Note</button>
+                            </div>
+                            <button onclick="deleteFromQueue('${key}')" class="text-red-600 font-bold text-xs hover:underline">❌ Xóa vĩnh viễn</button>
+                        </div>
+                    </div>
+                `;
+
+                // Khởi tạo bộ đếm thời gian Realtime chạy cho acc này
+                if (!activeTimers[key]) {
+                    activeTimers[key] = setInterval(() => {
+                        const now = Date.now();
+                        const diff = now - movedAt;
+
+                        const minutes = Math.floor(diff / 60000);
+                        const seconds = Math.floor((diff % 60000) / 1000);
+
+                        const strMinutes = String(minutes).padStart(2, '0');
+                        const strSeconds = String(seconds).padStart(2, '0');
+
+                        const timerEl = document.getElementById(`timer-${key}`);
+                        if (timerEl) {
+                            timerEl.innerText = `⏱️ ${strMinutes}:${strSeconds}`;
+                        }
+                    }, 1000);
+                }
+            });
+        });
+
+        // 3. XỬ LÝ NÚT LẤY ACC
+        function handleGetAcc(key, encodedContent, type) {
+            const content = decodeURIComponent(encodedContent);
+
+            Swal.fire({
+                title: '⚡ LỰA CHỌN XỬ LÝ ACC',
+                html: `<div class="text-left text-sm text-gray-600 bg-gray-100 p-3 rounded mb-4 break-all font-mono">${content}</div>`,
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: '📋 Copy & Xóa Luôn',
+                denyButtonText: '💾 Copy & Lưu Tạm (Để Note)',
+                cancelButtonText: 'Hủy bỏ',
+                confirmButtonColor: '#e11d48',
+                denyButtonColor: '#d97706',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigator.clipboard.writeText(content).then(() => {
+                        db.ref('accounts/' + key).remove().then(() => {
+                            Swal.fire('Thành công!', 'Đã copy và xóa khỏi kho chính.', 'success');
+                        });
+                    });
+                } else if (result.isDenied) {
+                    navigator.clipboard.writeText(content).then(() => {
+                        db.ref('temp_queue').push({
+                            content: content,
+                            type: type,
+                            note: "",
+                            note2: "", // Thêm trường note thứ 2 lên Firebase
+                            movedAt: firebase.database.ServerValue.TIMESTAMP // Lưu mốc thời gian máy chủ để đếm giây
+                        }).then(() => {
+                            db.ref('accounts/' + key).remove().then(() => {
+                                Swal.fire('Đã Lưu Tạm!', 'Đã chuyển xuống "Hàng Đợi Ghi Chú" để bạn theo dõi thời gian và điền note.', 'info');
+                            });
+                        });
+                    });
+                }
+            });
+        }
+
+        // HÀM LƯU ĐỒNG THỜI CẢ 2 MỤC GHI CHÚ
+        function saveNotes(key) {
+            const note1Value = document.getElementById(`note1-${key}`).value;
+            const note2Value = document.getElementById(`note2-${key}`).value;
+            
+            db.ref('temp_queue/' + key).update({
+                note: note1Value,
+                note2: note2Value
+            }).then(() => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Đã lưu cả 2 ghi chú!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        }
+
+        // HÀM XÓA ACC KHỎI HÀNG ĐỢI
+        function deleteFromQueue(key) {
+            Swal.fire({
+                title: 'Xóa vĩnh viễn?',
+                text: "Acc và mọi ghi chú đi kèm sẽ bị xóa hoàn toàn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý xóa'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Xóa bộ đếm trên trình duyệt trước
+                    if(activeTimers[key]) {
+                        clearInterval(activeTimers[key]);
+                        delete activeTimers[key];
                     }
-                };
+                    db.ref('temp_queue/' + key).remove().then(() => {
+                        Swal.fire('Đã xóa!', 'Dữ liệu đã dọn dẹp sạch.', 'success');
+                    });
+                }
+            });
+        }
+
+        // HÀM COPY PHỤ LỢI ÍCH
+        function copyToClipboard(encodedContent) {
+            const content = decodeURIComponent(encodedContent);
+            navigator.clipboard.writeText(content).then(() => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Đã copy lại!',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
             });
         }
     </script>
