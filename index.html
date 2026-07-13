@@ -1,868 +1,93 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- [GIỮ NGUYÊN CÁC META TAG VÀ CSS CỦA BẠN] -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Trị & Thông Báo Telegram Cloud</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kho Cloud">
-    
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        body {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-        }
-        input, select { user-select: text; }
-        ::-webkit-scrollbar { display: none; }
-        
-        @keyframes emojiFall {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        .welcome-emoji {
-            position: fixed;
-            z-index: 9999;
-            font-size: 32px;
-            pointer-events: none;
-            animation: emojiFall 2.5s linear forwards;
-        }
-    </style>
-    <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+    <style>body { -webkit-tap-highlight-color: transparent; user-select: none; } input { user-select: text; }</style>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased pb-12 transition-colors duration-200">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased">
 
-    <div id="alertPopup" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md bg-red-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between hidden animate-bounce">
-        <div class="flex items-center gap-3">
-            <i class="fa-solid fa-triangle-exclamation text-2xl animate-pulse"></i>
-            <div>
-                <p class="font-black text-sm uppercase tracking-wide">CẢNH BÁO SẮP ĐẾN GIỜ (BÁO TRƯỚC 3P)!</p>
-                <p id="alertPopupText" class="text-xs font-bold opacity-90 mt-0.5"></p>
-            </div>
-        </div>
-        <button onclick="document.getElementById('alertPopup').classList.add('hidden')" class="bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">Đóng</button>
-    </div>
-
-    <div id="loginScreen" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
-        <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800 relative transform transition-all duration-300">
-            
-            <button onclick="toggleTheme()" class="absolute top-5 right-5 text-gray-500 dark:text-gray-400 hover:text-blue-500 p-2 rounded-full bg-gray-100 dark:bg-gray-800 w-10 h-10 flex items-center justify-center cursor-pointer">
-                <i class="fa-solid fa-moon dark:hidden"></i>
-                <i class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
-            </button>
-
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-                    <i class="fa-solid fa-fingerprint text-2xl text-white"></i>
-                </div>
-                <h2 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white uppercase">HỆ THỐNG ĐỒNG BỘ</h2>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Đăng nhập tài khoản điều hành để vào kho</p>
-            </div>
-            
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Tài khoản</label>
-                    <input type="text" id="loginUser" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Mật khẩu</label>
-                    <input type="password" id="loginPass" required class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div id="loginError" class="text-red-500 text-sm hidden text-center font-bold">
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Tài khoản hoặc mật khẩu không chính xác!
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition duration-150 cursor-pointer shadow-lg shadow-blue-500/20">
-                    ĐĂNG NHẬP HỆ THỐNG
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="mainContent" class="hidden max-w-6xl mx-auto px-4 pt-6">
-        <header class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 gap-4 transition-all">
-            <div class="flex items-center gap-4">
-                <h1 class="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center">
-                    <i class="fa-solid fa-server text-blue-500 mr-2"></i>KHO ACC DATABASE
-                </h1>
-                <nav id="adminNav" class="hidden flex gap-1 bg-gray-100 dark:bg-gray-950 p-1 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <button id="btnTabAcc" class="px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm cursor-pointer transition">Kho Acc</button>
-                    <button id="btnTabSettings" class="px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer transition">Cài Đặt</button>
-                </nav>
-            </div>
-            
-            <div class="flex items-center gap-2">
-                <button id="btnEnableAudio" class="bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-amber-200 dark:border-amber-900/40 flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-volume-high"></i> Kích hoạt âm báo định giờ
-                </button>
-                <button onclick="toggleTheme()" class="bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 p-2.5 rounded-xl hover:text-blue-500 transition cursor-pointer">
-                    <i class="fa-solid fa-moon dark:hidden"></i>
-                    <i class="fa-solid fa-sun hidden dark:inline text-yellow-400"></i>
-                </button>
-                <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <span id="roleBadge" class="text-[11px] font-black uppercase px-2 py-0.5 rounded-md"></span>
-                    <button id="btnOpenProfile" class="text-gray-500 hover:text-blue-500 transition cursor-pointer text-sm p-1 ml-1">
-                        <i class="fa-solid fa-user-gear"></i>
-                    </button>
-                    <button id="btnLogout" class="text-gray-400 hover:text-red-500 transition cursor-pointer text-sm p-1">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <div id="pageAccounts" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 h-fit">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <i class="fa-solid fa-plus text-green-500 mr-2"></i>Up Acc Mới
-                </h2>
-                <form id="accForm" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản (Mail/SĐT)</label>
-                        <input type="text" id="accUser" required placeholder="Nhập tài khoản hoặc email" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
-                        <div id="duplicateAlert" class="hidden text-red-500 text-xs font-bold mt-1.5 flex items-center gap-1">
-                            <i class="fa-solid fa-circle-xmark animate-pulse"></i> Tài khoản này đã tồn tại trong kho Live!
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu</label>
-                        <input type="text" id="accPass" required placeholder="Nhập mật khẩu" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Thông tin MP</label>
-                        <input type="text" id="accMp" required placeholder="Ví dụ: 82M MP..." class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 dark:text-blue-400">
-                    </div>
-                    <button type="submit" id="btnSubmitAcc" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
-                        Đồng Bộ Lên Kho & Báo Bot
-                    </button>
-                </form>
-            </div>
-
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800 gap-4">
-                        <div class="flex items-center gap-3">
-                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Danh Sách Kho Acc Live</h2>
-                            <span id="txtTotalAccs" class="bg-blue-100 text-blue-800 dark:bg-blue-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">Kho: 0</span>
-                        </div>
-                        <div class="relative w-full sm:w-64">
-                            <input type="text" id="searchBar" placeholder="Gõ tìm nhanh..." class="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl text-sm outline-none bg-gray-50 dark:bg-gray-950 focus:ring-2 focus:ring-blue-500">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto rounded-xl">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
-                                    <th class="p-3">Tài khoản</th>
-                                    <th class="p-3">Mật khẩu</th>
-                                    <th class="p-3">Thông tin MP</th>
-                                    <th class="p-3 text-center">Xuất</th>
-                                </tr>
-                            </thead>
-                            <tbody id="accTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium"></tbody>
-                        </table>
-                    </div>
-                    <div id="emptyState" class="text-center py-12 text-gray-400">
-                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang tải dữ liệu từ Live Server...
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 transition-all">
-                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
-                            <i class="fa-solid fa-history text-amber-500 mr-2"></i> Nhật Ký Xuất Kho Server Cloud (Toàn Hệ Thống)
-                        </h2>
-                        <button id="btnClearHistory" class="text-[11px] bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950/40 dark:text-red-400 font-black px-3 py-1.5 rounded-xl cursor-pointer hidden">
-                            Xóa Sạch Kho Lịch Sử (Chỉ Admin)
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl max-h-72 overflow-y-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-amber-50/50 dark:bg-amber-950/20 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold border-b border-gray-100 dark:border-gray-800">
-                                    <th class="p-3 w-[160px]">Thời gian lấy</th>
-                                    <th class="p-3 w-[140px]">Người xuất kho</th>
-                                    <th class="p-3">Tài khoản | Mật khẩu</th>
-                                    <th class="p-3">Thông tin MP</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody" class="text-xs divide-y divide-gray-100 dark:divide-gray-800 text-gray-600 dark:text-gray-300">
-                                <tr><td colspan="4" class="p-4 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang kết nối lịch sử máy chủ...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="pageSettings" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="space-y-6 h-fit">
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-purple-600 dark:text-purple-400">
-                        <i class="fa-solid fa-user-plus mr-2"></i>Tạo Tài Khoản QTV
-                    </h2>
-                    <form id="qtvForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản QTV</label>
-                            <input type="text" id="qtvUser" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu cấp cho QTV</label>
-                            <input type="text" id="qtvPass" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm">
-                        </div>
-                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md">
-                            Cấp Quyền QTV Mới
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center text-amber-600 dark:text-amber-400">
-                        <i class="fa-solid fa-business-time mr-2"></i>Thêm Mốc Báo Giờ (Chẵn/Lẻ)
-                    </h2>
-                    <form id="timerConfigForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên Mốc (Ví dụ: cole, rái cá...)</label>
-                            <input type="text" id="timerName" required placeholder="cole" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-bold text-gray-900 dark:text-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Giờ chuẩn mốc</label>
-                                <input type="number" id="timerTargetHour" required min="0" max="23" placeholder="17" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phút chuẩn mốc</label>
-                                <input type="number" id="timerTargetMin" required min="0" max="59" placeholder="00" class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl outline-none bg-gray-50 dark:bg-gray-950 text-sm font-semibold">
-                            </div>
-                        </div>
-                        <p class="text-[11px] font-medium text-amber-600 dark:text-amber-400 mt-1 italic">
-                            💡 Hệ thống tự động trừ lùi 3 phút để báo động trước.
-                        </p>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow-md text-xs uppercase tracking-wider">
-                            Lưu Mốc Báo Giờ Mới
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
-                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white mb-6 flex justify-between items-center shadow-lg">
-                        <div>
-                            <p class="text-sm font-medium opacity-80 uppercase tracking-wider">Tổng thành viên vận hành</p>
-                            <h3 id="txtTotalMembers" class="text-4xl font-black mt-1">1</h3>
-                        </div>
-                        <i class="fa-solid fa-users-gear text-4xl opacity-30"></i>
-                    </div>
-                    <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4">Danh Sách Nhân Sự Vận Hành</h2>
-                    <div class="overflow-x-auto rounded-xl">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase border-b border-gray-100 dark:border-gray-800">
-                                    <th class="p-3">Tài khoản</th>
-                                    <th class="p-3">Mật khẩu</th>
-                                    <th class="p-3">Chức vụ</th>
-                                    <th class="p-3 text-center">Thu hồi quyền</th>
-                                </tr>
-                            </thead>
-                            <tbody id="qtvTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
-                    <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                        <i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i> Các Mốc Giờ Đang Bật Cảnh Báo Hệ Thống
-                    </h2>
-                    <div class="overflow-x-auto rounded-xl">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase border-b border-gray-100 dark:border-gray-800">
-                                    <th class="p-3">Tên Mốc</th>
-                                    <th class="p-3 text-center">Mốc chuẩn</th>
-                                    <th class="p-3 text-center">Thời gian còi hú (Đã lùi 3p)</th>
-                                    <th class="p-3 text-center">Xóa mốc</th>
-                                </tr>
-                            </thead>
-                            <tbody id="timerTableBody" class="text-sm divide-y divide-gray-100 dark:divide-gray-800 font-medium">
-                                <tr><td colspan="4" class="p-4 text-center text-gray-400">Đang đồng bộ dữ liệu mốc báo giờ...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="profileModal" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-gray-800">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
-                <i class="fa-solid fa-user-pen text-blue-500 mr-2"></i> Đổi Thông Tin Đăng Nhập
-            </h3>
-            <form id="profileForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tài khoản mới</label>
-                    <input type="text" id="profileUser" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-950 outline-none text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mật khẩu mới</label>
-                    <input type="text" id="profilePass" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-950 outline-none text-sm">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" id="btnCancelProfile" class="px-4 py-2 text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 rounded-xl">Hủy</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold bg-blue-600 text-white rounded-xl shadow-md">Lưu</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-    </script>
+    <!-- [GIỮ NGUYÊN PHẦN LOGIN SCREEN VÀ CÁC DIV HIỂN THỊ KHÁC] -->
+    
+    <!-- FORM UP ACC (Đã thêm ô Ghi chú) -->
+    <form id="accForm" class="space-y-4">
+        <!-- [CÁC INPUT CŨ: User, Pass, MP] -->
+        <input type="text" id="accUser" required placeholder="Tài khoản" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
+        <input type="text" id="accPass" required placeholder="Mật khẩu" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
+        <input type="text" id="accMp" required placeholder="Thông tin MP" class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
+        <input type="text" id="accNote" placeholder="Ghi chú cho acc..." class="w-full px-3 py-2.5 border rounded-xl bg-gray-50 dark:bg-gray-950">
+        <button type="submit" id="btnSubmitAcc" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl">Đồng Bộ Lên Kho & Báo Bot</button>
+    </form>
 
     <script type="module">
+        // [CÁC IMPORT CỦA BẠN]
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         
-        const firebaseConfig = {
-            apiKey: "AIzaSyCcD_AORL2MJmgGt46H_vZp8-eQsLI3GaA",
-            authDomain: "qli-kho-ec.firebaseapp.com",
-            databaseURL: "https://qli-kho-ec-default-rtdb.firebaseio.com",
-            projectId: "qli-kho-ec",
-            storageBucket: "qli-kho-ec.firebasestorage.app",
-            messagingSenderId: "16758389298",
-            appId: "1:16758389298:web:cf9146040236db9e459a2b"
-        };
+        // ... (Cấu hình Firebase của bạn) ...
 
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        
-        const dbRef = ref(database, 'accounts');
-        const usersRef = ref(database, 'users');
-        const historyRef = ref(database, 'history'); 
-        const timersRef = ref(database, 'timers'); 
-
-        const TELEGRAM_TOKEN = "8503723223:AAF8FonAHhyHUz7vKmy-7K7sBPqYJUJlCwo";
-        const TELEGRAM_CHAT_ID = "-5310703259";
-        
-        const loginScreen = document.getElementById('loginScreen');
-        const mainContent = document.getElementById('mainContent');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
-        const roleBadge = document.getElementById('roleBadge');
-        const btnLogout = document.getElementById('btnLogout');
-        const adminNav = document.getElementById('adminNav');
-        const pageAccounts = document.getElementById('pageAccounts');
-        const pageSettings = document.getElementById('pageSettings');
-        const btnTabAcc = document.getElementById('btnTabAcc');
-        const btnTabSettings = document.getElementById('btnTabSettings');
-        const accTableBody = document.getElementById('accTableBody');
-        const emptyState = document.getElementById('emptyState');
-        const searchBar = document.getElementById('searchBar');
-        const qtvTableBody = document.getElementById('qtvTableBody');
-        const timerTableBody = document.getElementById('timerTableBody');
-        const txtTotalMembers = document.getElementById('txtTotalMembers');
-        const txtTotalAccs = document.getElementById('txtTotalAccs');
-        const historyTableBody = document.getElementById('historyTableBody');
-        const btnClearHistory = document.getElementById('btnClearHistory');
-        const profileModal = document.getElementById('profileModal');
-        const btnOpenProfile = document.getElementById('btnOpenProfile');
-        const btnCancelProfile = document.getElementById('btnCancelProfile');
-        const profileForm = document.getElementById('profileForm');
-        const profileUser = document.getElementById('profileUser');
-        const profilePass = document.getElementById('profilePass');
-        const btnEnableAudio = document.getElementById('btnEnableAudio');
-        const alertPopup = document.getElementById('alertPopup');
-        const alertPopupText = document.getElementById('alertPopupText');
-        const accUserInput = document.getElementById('accUser');
-        const duplicateAlert = document.getElementById('duplicateAlert');
-        const btnSubmitAcc = document.getElementById('btnSubmitAcc');
-        const timerConfigForm = document.getElementById('timerConfigForm');
-
-        let currentUserRole = localStorage.getItem('userRole') || null;
-        let currentUserName = localStorage.getItem('userName') || '';
-        let currentUserFirebaseKey = localStorage.getItem('userFirebaseKey') || '';
-        let localAccCache = [];
-        let localTimerCache = []; 
-        let isFirstLoadFinished = false;
-        let audioContext = null;
-        let lastNotifiedMinute = -1; 
-        let lastNotifiedHour = -1;
-
-        // KÍCH HOẠT ÂM THANH ĐỊNH GIỜ & BÁO ADMIN QUA TELEGRAM
-        btnEnableAudio.addEventListener('click', () => {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            btnEnableAudio.className = "bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-2.5 rounded-xl border border-green-200 dark:border-green-900/40 flex items-center gap-1.5 cursor-pointer";
-            btnEnableAudio.innerHTML = `<i class="fa-solid fa-volume-high"></i> Định giờ đã sẵn sàng`;
-            playBeep(440, 0.1);
-
-            const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
-            sendTelegramNotification(`🔊 *THÔNG BÁO TRẠNG THÁI ĐỊNH GIỜ*\n👤 *Người thực hiện:* \`${currentUserName.toUpperCase()}\`\n⚙️ *Hành động:* Đã kích hoạt bộ âm thanh báo động thành công.\n⏰ *Thời gian:* \`${timeString}\``);
-        });
-
-        function playBeep(frequency = 587.33, duration = 0.3) {
-            if (!audioContext) return;
-            try {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-                osc.start();
-                osc.stop(audioContext.currentTime + duration);
-            } catch (e) { console.error("Lỗi âm thanh:", e); }
-        }
-
-        // KIỂM TRA ĐỊNH GIỜ TOÀN DIỆN (CHẤN & LẺ) TỰ ĐỘNG CHẠY MỖI GIÂY
-        function startTimerCheck() {
-            setInterval(() => {
-                const now = new Date();
-                const currentHour = now.getHours();
-                const currentMin = now.getMinutes();
-
-                // Kiểm tra xem phút hiện tại và giờ hiện tại có trùng với mốc hú còi nào không
-                if (currentMin !== lastNotifiedMinute || currentHour !== lastNotifiedHour) {
-                    const activeTimer = localTimerCache.find(t => parseInt(t.alertHour) === currentHour && parseInt(t.alertMin) === currentMin);
-                    
-                    if (activeTimer) {
-                        lastNotifiedMinute = currentMin;
-                        lastNotifiedHour = currentHour;
-                        triggerTimeAlert(activeTimer.name, activeTimer.targetHour, activeTimer.targetMin);
-                    }
-                }
-            }, 1000); 
-        }
-
-        function triggerTimeAlert(name, targetHour, targetMinute) {
-            const displayHour = String(targetHour).padStart(2, '0');
-            const displayMin = String(targetMinute).padStart(2, '0');
-            
-            const message = `⏳ Sắp đến mốc [${displayHour}:${displayMin}]: ${name.toUpperCase()} (Hệ thống đang hú còi!)`;
-            alertPopupText.innerText = message;
-            alertPopup.classList.remove('hidden');
-
-            playBeep(659.25, 0.2);
-            setTimeout(() => playBeep(659.25, 0.2), 300);
-            setTimeout(() => playBeep(880.00, 0.4), 600);
-
-            sendTelegramNotification(`⚠️ *HỆ THỐNG CẢNH BÁO GIỜ ĐỊNH ĐỊNH VỊ*\n🔔 Sắp đến giờ mốc: *${name.toUpperCase()}*\n⏰ Thời gian mốc chuẩn: \`${displayHour}:${displayMin}\`\n📌 Trạng thái: Đã báo trước 3 phút. Vui lòng chuẩn bị!`);
-        }
-
-        // ĐỒNG BỘ DANH SÁCH MỐC GIỜ TỪ FIREBASE CLOUD
-        onValue(timersRef, (snapshot) => {
-            const data = snapshot.val();
-            localTimerCache = [];
-            timerTableBody.innerHTML = '';
-
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    localTimerCache.push({ id: key, ...data[key] });
-                    
-                    const tH = String(data[key].targetHour).padStart(2, '0');
-                    const tM = String(data[key].targetMin).padStart(2, '0');
-                    const aH = String(data[key].alertHour).padStart(2, '0');
-                    const aM = String(data[key].alertMin).padStart(2, '0');
-
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-50 dark:hover:bg-gray-850/40 transition duration-100";
-                    tr.innerHTML = `
-                        <td class="p-3 text-gray-900 dark:text-gray-100 font-bold uppercase">${escapeHtml(data[key].name)}</td>
-                        <td class="p-3 text-center text-green-600 dark:text-green-400 font-mono font-black">${tH}:${tM}</td>
-                        <td class="p-3 text-center text-red-600 dark:text-red-400 font-mono font-black">${aH}:${aM}</td>
-                        <td class="p-3 text-center">
-                            <button data-id="${key}" class="btn-delete-timer text-red-500 hover:text-red-700 p-1 cursor-pointer transition transform active:scale-90">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                    `;
-                    timerTableBody.appendChild(tr);
-                });
-
-                document.querySelectorAll('.btn-delete-timer').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        if(confirm("Xác nhận xóa mốc báo giờ này khỏi hệ thống Cloud?")) {
-                            remove(ref(database, 'timers/' + this.getAttribute('data-id')));
-                        }
-                    });
-                });
-            } else {
-                timerTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Chưa có cấu hình mốc giờ nào.</td></tr>`;
-            }
-        });
-
-        // XỬ LÝ FORM THÊM MỐC: TỰ ĐỘNG TRỪ 3 PHÚT TRƯỚC KHI LƯU LÊN FIREBASE
-        timerConfigForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (currentUserRole !== 'admin') {
-                alert("Quyền hạn QTV không được phép chỉnh sửa mốc giờ hệ thống!");
-                return;
-            }
-            const name = document.getElementById('timerName').value.trim();
-            const targetHour = parseInt(document.getElementById('timerTargetHour').value.trim());
-            const targetMin = parseInt(document.getElementById('timerTargetMin').value.trim());
-
-            // Thuật toán tự trừ lùi 3 phút chính xác kể cả thời điểm giáp ranh giờ mới
-            let alertHour = targetHour;
-            let alertMin = targetMin - 3;
-
-            if (alertMin < 0) {
-                alertMin = 60 + alertMin; // Ví dụ: 00 - 3 = phút 57
-                alertHour = alertHour - 1;
-                if (alertHour < 0) {
-                    alertHour = 23; // Sang ngày hôm trước
-                }
-            }
-
-            set(push(timersRef), { name, targetHour, targetMin, alertHour, alertMin }).then(() => {
-                timerConfigForm.reset();
-                alert(`Đã lưu mốc [${name.toUpperCase()} - Chuẩn: ${String(targetHour).padStart(2, '0')}:${String(targetMin).padStart(2, '0')}]. Hệ thống sẽ tự hú còi vào lúc ${String(alertHour).padStart(2, '0')}:${String(alertMin).padStart(2, '0')}!`);
-            });
-        });
-
-        accUserInput.addEventListener('input', () => {
-            const inputValue = accUserInput.value.trim().toLowerCase();
-            if(!inputValue) {
-                duplicateAlert.classList.add('hidden');
-                btnSubmitAcc.disabled = false;
-                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
-                return;
-            }
-            const isDuplicate = localAccCache.some(acc => acc.user && acc.user.trim().toLowerCase() === inputValue);
-            if(isDuplicate) {
-                duplicateAlert.classList.remove('hidden');
-                btnSubmitAcc.disabled = true;
-                btnSubmitAcc.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                duplicateAlert.classList.add('hidden');
-                btnSubmitAcc.disabled = false;
-                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        });
-
-        function sendTelegramNotification(message) {
-            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: "Markdown" })
-            }).catch(err => console.error(err));
-        }
-
-        function triggerWelcomeEmojis(type) {
-            const emojis = type === 'admin' ? ['🧸', '🐡'] : ['🎱', '🪳'];
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const el = document.createElement('div');
-                    el.className = 'welcome-emoji';
-                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.top = '-40px';
-                    document.body.appendChild(el);
-                    setTimeout(() => el.remove(), 2500);
-                }, i * 60);
-            }
-        }
-
-        function checkAuth() {
-            if (currentUserRole === 'admin') {
-                loginScreen.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                adminNav.classList.remove('hidden');
-                btnClearHistory.classList.remove('hidden'); 
-                timerConfigForm.parentElement.classList.remove('hidden'); 
-                roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/40";
-                roleBadge.innerHTML = `Admin`;
-                switchTab('acc');
-            } else if (currentUserRole === 'qtv') {
-                loginScreen.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                adminNav.classList.add('hidden');
-                btnClearHistory.classList.add('hidden');
-                timerConfigForm.parentElement.classList.add('hidden'); 
-                roleBadge.className = "text-[11px] font-black uppercase px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900/40";
-                roleBadge.innerHTML = `QTV`;
-                switchTab('acc');
-            } else {
-                loginScreen.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-            }
-        }
-
-        function switchTab(tab) {
-            if (tab === 'acc') {
-                pageAccounts.classList.remove('hidden');
-                pageSettings.classList.add('hidden');
-                btnTabAcc.className = "px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm cursor-pointer";
-                btnTabSettings.className = "px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer";
-            } else {
-                pageAccounts.classList.add('hidden');
-                pageSettings.classList.remove('hidden');
-                btnTabSettings.className = "px-3 py-1 text-xs font-bold rounded-lg bg-white dark:bg-gray-900 text-purple-600 dark:text-purple-400 shadow-sm cursor-pointer";
-                btnTabAcc.className = "px-3 py-1 text-xs font-bold rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer";
-            }
-        }
-
-        btnTabAcc.addEventListener('click', () => switchTab('acc'));
-        btnTabSettings.addEventListener('click', () => switchTab('settings'));
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
-
-            if (user === "gbao08" && pass === "Gbao0088!?") {
-                currentUserRole = 'admin'; currentUserName = 'gbao08'; currentUserFirebaseKey = 'ADMIN_MASTER';
-                localStorage.setItem('userRole', 'admin'); localStorage.setItem('userName', 'gbao08'); localStorage.setItem('userFirebaseKey', 'ADMIN_MASTER');
-                loginError.classList.add('hidden'); loginForm.reset(); checkAuth(); triggerWelcomeEmojis('admin');
-                return;
-            }
-
-            try {
-                const snapshot = await get(usersRef);
-                const usersData = snapshot.val();
-                let matched = false; let matchedKey = '';
-                if (usersData) {
-                    Object.keys(usersData).forEach(key => {
-                        if (usersData[key].username === user && usersData[key].password === pass) { matched = true; matchedKey = key; }
-                    });
-                }
-                if (matched) {
-                    currentUserRole = 'qtv';
-                    currentUserName = user; currentUserFirebaseKey = matchedKey;
-                    localStorage.setItem('userRole', 'qtv'); localStorage.setItem('userName', user); localStorage.setItem('userFirebaseKey', matchedKey);
-                    loginError.classList.add('hidden'); loginForm.reset(); checkAuth(); triggerWelcomeEmojis('qtv');
-                } else { loginError.classList.remove('hidden'); }
-            } catch (err) { alert("Lỗi xác thực: " + err.message); }
-        });
-
-        btnLogout.addEventListener('click', () => {
-            currentUserRole = null;
-            localStorage.removeItem('userRole');
-            checkAuth();
-        });
-
-        onValue(dbRef, (snapshot) => {
-            const data = snapshot.val();
-            localAccCache = []; 
-            if (data) {
-                Object.keys(data).forEach(key => { 
-                    if(data[key] && data[key].user) {
-                        localAccCache.push({ id: key, ...data[key] }); 
-                    }
-                });
-            }
-            isFirstLoadFinished = true;
-            txtTotalAccs.innerText = `Kho: ${localAccCache.length}`;
-            if (currentUserRole) renderAccTable(localAccCache);
-        });
-
-        onValue(historyRef, (snapshot) => {
-            const data = snapshot.val();
-            historyTableBody.innerHTML = '';
-            if (!data) {
-                historyTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400"><i class="fa-solid fa-folder-open mr-1"></i> Chưa có lịch sử xuất acc nào trên hệ thống Cloud.</td></tr>`;
-                return;
-            }
-            const historyList = [];
-            Object.keys(data).forEach(key => { historyList.push(data[key]); });
-            historyList.reverse(); 
-            const renderList = historyList.slice(0, 100);
-            renderList.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-850/20 border-b border-gray-100 dark:border-gray-800/50 transition duration-200";
-                const timeBadge = `<span class="bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 px-2 py-1 rounded-lg font-semibold text-[11px] whitespace-nowrap"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(item.time)}</span>`;
-                tr.innerHTML = `
-                    <td class="p-3 whitespace-nowrap">${timeBadge}</td>
-                    <td class="p-3 font-bold text-amber-600 dark:text-amber-400"><i class="fa-solid fa-user-check text-xs mr-1 opacity-70"></i>${escapeHtml(item.operator)}</td>
-                    <td class="p-3 font-mono select-text font-medium text-gray-700 dark:text-gray-300">${escapeHtml(item.account)}</td>
-                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 px-1.5 py-0.5 rounded text-[11px] font-semibold border border-purple-100 dark:border-purple-900/30">${escapeHtml(item.info)}</span></td>
-                `;
-                historyTableBody.appendChild(tr);
-            });
-        });
-
-        function renderAccTable(dataToRender) {
-            accTableBody.innerHTML = '';
-            if (!isFirstLoadFinished) {
-                emptyState.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-3xl mb-3 block text-blue-500"></i> Đang tải dữ liệu từ Live Server...`;
-                emptyState.classList.remove('hidden'); return;
-            }
-            if (dataToRender.length === 0) {
-                emptyState.innerHTML = `<i class="fa-regular fa-folder-open text-3xl mb-2 block"></i> Kho đang trống.`;
-                emptyState.classList.remove('hidden'); return;
-            }
-            emptyState.classList.add('hidden');
-            dataToRender.forEach((acc) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition duration-100";
-                tr.innerHTML = `
-                    <td class="p-3 text-gray-900 dark:text-gray-100 font-semibold">${escapeHtml(acc.user)}</td>
-                    <td class="p-3 font-mono text-blue-600 dark:text-blue-400 font-semibold select-text">${escapeHtml(acc.pass)}</td>
-                    <td class="p-3"><span class="bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 text-xs font-black px-2.5 py-0.5 rounded-md border border-purple-100 dark:border-purple-900/30">${escapeHtml(acc.mp || 'Chưa ghi chú')}</span></td>
-                    <td class="p-3 text-center">
-                        <button data-id="${acc.id}" data-user="${escapeHtml(acc.user)}" data-pass="${escapeHtml(acc.pass)}" data-mp="${escapeHtml(acc.mp || 'Chưa ghi chú')}" class="btn-delete-acc text-red-500 hover:text-red-700 p-1 cursor-pointer transform active:scale-95 transition">
-                            <i class="fa-solid fa-box-open text-base"></i>
-                        </button>
-                    </td>
-                `;
-                accTableBody.appendChild(tr);
-            });
-
-            document.querySelectorAll('.btn-delete-acc').forEach(button => {
-                button.addEventListener('click', function() {
-                    const accId = this.getAttribute('data-id');
-                    const accUser = this.getAttribute('data-user');
-                    const accPass = this.getAttribute('data-pass');
-                    const accMp = this.getAttribute('data-mp');
-                    
-                    if(confirm(`Xác nhận xuất tài khoản ${accUser}?\n(Hệ thống tự động copy sđt|pass và báo về Telegram)`)) {
-                        const textToCopy = `${accUser}|${accPass}`;
-                        navigator.clipboard.writeText(textToCopy).catch(() => {
-                            const textArea = document.createElement("textarea");
-                            textArea.value = textToCopy; document.body.appendChild(textArea);
-                            textArea.select(); document.execCommand('copy'); textArea.remove();
-                        });
-
-                        const timeString = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
-                        const newHistoryRef = push(historyRef);
-                        set(newHistoryRef, {
-                            time: timeString, operator: currentUserName, account: `${accUser} | ${accPass}`, info: accMp
-                        });
-                        remove(ref(database, 'accounts/' + accId)).then(() => {
-                            const currentRemain = localAccCache.length - 1;
-                            const msg = `📤 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
-                                        `⚙️ *Hành động:* Xuất tài khoản (Bán/Xóa)\n` +
-                                        `📧 *Tài khoản:* \`${accUser}\`\n` +
-                                        `🔑 *Mật khẩu:* \`${accPass}\`\n` +
-                                        `💎 *Thông tin MP:* ${accMp}\n` +
-                                        `📉 *Số lượng còn lại trong kho:* \`${currentRemain}\` acc.`;
-                            sendTelegramNotification(msg);
-                        });
-                    }
-                });
-            });
-        }
-
-        btnClearHistory.addEventListener('click', () => {
-            if(currentUserRole !== 'admin') return;
-            if(confirm("CẢNH BÁO: Hành động này sẽ XÓA SẠCH toàn bộ kho nhật ký trên hệ thống Firebase Cloud mãi mãi. Bạn có chắc chắn muốn xóa?")) {
-                remove(historyRef).then(() => { alert("Đã xóa sạch kho lịch sử hệ thống thành công!"); });
-            }
-        });
-
+        // HÀM XỬ LÝ SUBMIT (Đã thêm Ghi chú & Đếm giờ)
         document.getElementById('accForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('accUser').value.trim();
             const pass = document.getElementById('accPass').value.trim();
             const mp = document.getElementById('accMp').value.trim();
+            const note = document.getElementById('accNote').value.trim();
+            const timeUp = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
 
-            const isDuplicate = localAccCache.some(acc => acc.user && acc.user.trim().toLowerCase() === user.toLowerCase());
-            if(isDuplicate) {
-                alert(`❌ LỖI TRÙNG DỮ LIỆU!\nTài khoản [ ${user} ] đã tồn tại trong kho Live. Vui lòng kiểm tra lại!`);
-                duplicateAlert.classList.remove('hidden');
-                btnSubmitAcc.disabled = true;
-                btnSubmitAcc.classList.add('opacity-50', 'cursor-not-allowed');
-                return;
-            }
-
-            set(push(dbRef), { user, pass, mp }).then(() => {
+            set(push(dbRef), { user, pass, mp, note, timeUp }).then(() => {
                 document.getElementById('accForm').reset();
-                duplicateAlert.classList.add('hidden');
-                btnSubmitAcc.disabled = false;
-                btnSubmitAcc.classList.remove('opacity-50', 'cursor-not-allowed');
-                
+                // [GIỮ NGUYÊN LOGIC CŨ BÊN DƯỚI]
                 const currentTotal = localAccCache.length + 1;
                 const msg = `📥 *THÔNG BÁO TỪ SERVER: ${currentUserName.toUpperCase()}*\n` +
                             `⚙️ *Hành động:* Thêm (Up) tài khoản mới\n` +
                             `📧 *Tài khoản:* \`${user}\`\n` +
                             `🔑 *Mật khẩu:* \`${pass}\`\n` +
                             `💎 *Thông tin MP:* ${mp}\n` +
+                            `📝 *Ghi chú:* ${note || 'Không có'}\n` +
+                            `⏰ *Giờ Up:* ${timeUp}\n` +
                             `📈 *Tổng số lượng trong kho:* \`${currentTotal}\` acc.`;
                 sendTelegramNotification(msg);
             });
         });
 
-        onValue(usersRef, (snapshot) => {
-            const data = snapshot.val(); qtvTableBody.innerHTML = ''; let countTotal = 1; 
-            const trAdmin = document.createElement('tr');
-            trAdmin.className = "bg-red-50/30 dark:bg-red-950/10 font-bold text-red-600 dark:text-red-400";
-            trAdmin.innerHTML = `<td class="p-3">gbao08</td><td class="p-3 font-mono">*********</td><td class="p-3"><span class="bg-red-100 text-red-800 text-[10px] px-2 py-0.5 rounded-md border border-red-200">ADMIN TỐI CAO</span></td><td class="p-3 text-center text-gray-400 text-xs">- Cố định -</td>`;
-            qtvTableBody.appendChild(trAdmin);
-
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    countTotal++; const qtv = data[key]; const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-50 dark:hover:bg-gray-850/40 transition duration-100";
-                    tr.innerHTML = `
-                        <td class="p-3 text-gray-900 dark:text-gray-100">${escapeHtml(qtv.username)}</td>
-                        <td class="p-3 font-mono text-purple-600 dark:text-purple-400">${escapeHtml(qtv.password)}</td>
-                        <td class="p-3"><span class="bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400 text-[10px] px-2 py-0.5 rounded-md border border-purple-200">QUẢN TRỊ VIÊN</span></td>
-                        <td class="p-3 text-center"><button data-id="${key}" class="btn-delete-qtv text-red-500 hover:text-red-700 p-1 cursor-pointer"><i class="fa-solid fa-user-minus"></i></button></td>
-                    `;
-                    qtvTableBody.appendChild(tr);
-                });
-            }
-            txtTotalMembers.innerText = countTotal;
-            document.querySelectorAll('.btn-delete-qtv').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (confirm('Thu hồi quyền QTV?')) { remove(ref(database, 'users/' + this.getAttribute('data-id'))); }
-                });
+        // HÀM RENDER TABLE (Thêm nút Xuất với 2 chọn lựa)
+        function renderAccTable(dataToRender) {
+            accTableBody.innerHTML = '';
+            dataToRender.forEach((acc) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${acc.user}</td>
+                    <td>${acc.mp} <br> <span class="text-xs text-gray-500">${acc.note || ''}</span></td>
+                    <td class="text-blue-500">${acc.timeUp || ''}</td>
+                    <td><button class="btn-export" data-id="${acc.id}" data-acc="${acc.user}|${acc.pass}">Xuất</button></td>
+                `;
+                accTableBody.appendChild(tr);
             });
-        });
 
-        document.getElementById('qtvForm').addEventListener('submit', (e) => {
-            e.preventDefault(); if (currentUserRole !== 'admin') return;
-            set(push(usersRef), { username: document.getElementById('qtvUser').value.trim(), password: document.getElementById('qtvPass').value.trim() }).then(() => {
-                document.getElementById('qtvForm').reset(); alert("Cấp quyền QTV thành công!");
+            // Logic chọn 2 mục khi xuất
+            document.querySelectorAll('.btn-export').forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute('data-id');
+                    const accInfo = btn.getAttribute('data-acc');
+                    
+                    // Logic chọn 2 mục theo ý bạn
+                    if(confirm("1. OK = Copy & Xoá\n2. Cancel = Copy & Đưa vào mục chờ (Note lại)")) {
+                        navigator.clipboard.writeText(accInfo);
+                        remove(ref(database, 'accounts/' + id));
+                    } else {
+                        navigator.clipboard.writeText(accInfo);
+                        // Đẩy vào nhánh 'waiting' để note lại
+                        set(ref(database, 'waiting/' + id), { info: accInfo, time: new Date().toLocaleString() });
+                        remove(ref(database, 'accounts/' + id));
+                    }
+                };
             });
-        });
-
-        searchBar.addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase();
-            const filtered = localAccCache.filter(acc => (acc.user && acc.user.toLowerCase().includes(keyword)) || (acc.mp && acc.mp.toLowerCase().includes(keyword)));
-            renderAccTable(filtered);
-        });
-
-        btnOpenProfile.addEventListener('click', async () => {
-            if (currentUserRole === 'admin') { profileUser.value = currentUserName; profilePass.value = "Gbao0088!?"; } 
-            else {
-                const currentSnap = await get(ref(database, 'users/' + currentUserFirebaseKey));
-                if (currentSnap.exists()) { profileUser.value = currentSnap.val().username; profilePass.value = currentSnap.val().password; }
-            }
-            profileModal.classList.remove('hidden'); profileModal.classList.add('flex');
-        });
-
-        btnCancelProfile.addEventListener('click', () => { profileModal.classList.add('hidden'); profileModal.classList.remove('flex'); });
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
-
-        checkAuth();
-        startTimerCheck(); 
     </script>
 </body>
 </html>
