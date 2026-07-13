@@ -3,259 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Kho Acc & Mốc Giờ</title>
-    <!-- Tailwind CSS để giao diện đẹp -->
+    <title>Hệ Thống Quản Lý Kho Acc & Báo Giờ Toàn Diện</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 để làm Popup chọn tính năng -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gray-100 min-h-screen p-4 md:p-6">
 
-    <div class="max-w-4xl mx-auto space-y-8">
-        <!-- KHU VỰC 1: QUẢN LÝ KHO ACC -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-                📦 Kho Tài Khoản Hiện Tại
-            </h2>
-            
-            <!-- Danh sách tài khoản hiển thị -->
-            <div id="accList" class="space-y-3">
-                <p class="text-gray-500 italic text-center">Đang tải dữ liệu tài khoản...</p>
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- ================= KHU VỰC 1: ĐĂNG NHẬP ADMIN ================= -->
+        <div id="loginSection" class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-4 text-center text-gray-800">🔒 ĐĂNG NHẬP HỆ THỐNG</h2>
+            <div class="space-y-3">
+                <input id="adminUser" type="text" placeholder="Tài khoản Admin" class="w-full px-3 py-2 border rounded focus:ring-1 focus:ring-blue-500">
+                <input id="adminPass" type="password" placeholder="Mật khẩu" class="w-full px-3 py-2 border rounded focus:ring-1 focus:ring-blue-500">
+                <button onclick="checkLogin()" class="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">Đăng Nhập</button>
             </div>
         </div>
 
-        <!-- KHU VỰC 2: HÀNG ĐỢI LƯU TẠM (ĐỢI NOTE + BỘ ĐẾM GIỜ) -->
-        <div class="bg-yellow-50 p-6 rounded-lg shadow-md border border-yellow-200">
-            <h2 class="text-xl font-bold mb-2 text-yellow-800 flex items-center gap-2">
-                ⏳ Hàng Đợi Ghi Chú (Tạm thời)
-            </h2>
-            <p class="text-xs text-yellow-700 mb-4">Tài khoản được giữ lại ở đây để note thông tin. Có bộ đếm thời gian thực để bạn theo dõi thời gian xử lý.</p>
+        <!-- ================= GIAO DIỆN CHÍNH (ẨN KHI CHƯA LOGGED IN) ================= -->
+        <div id="mainDashboard" class="hidden space-y-6">
             
-            <div id="tempQueueList" class="space-y-3">
-                <p class="text-gray-400 italic text-center text-sm">Chưa có tài khoản nào trong hàng đợi.</p>
+            <div class="flex justify-between items-center bg-blue-900 text-white p-4 rounded-lg shadow">
+                <span class="font-bold">👋 Xin chào Admin! Hệ thống đã sẵn sàng.</span>
+                <button onclick="logout()" class="px-3 py-1 bg-red-600 rounded text-xs hover:bg-red-700 font-semibold">Đăng xuất</button>
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- CỘT TRÁI: UPLOAD ACC & CÀI MỐC GIỜ TELEGRAM -->
+                <div class="space-y-6 md:col-span-1">
+                    <!-- 🛠️ FORM UPLOAD ACC -->
+                    <div class="bg-white p-5 rounded-lg shadow border-t-4 border-blue-600">
+                        <h3 class="text-lg font-bold mb-3 text-gray-800">➕ Thêm Acc Vào Kho</h3>
+                        <div class="space-y-3">
+                            <input id="accType" type="text" placeholder="Phân loại (Ví dụ: Acc Cổ, Acc New...)" class="w-full px-3 py-2 border text-sm rounded">
+                            <textarea id="accContent" rows="3" placeholder="Nhập thông tin tài khoản (Định dạng: tk|mk hoặc tùy ý)" class="w-full px-3 py-2 border text-sm rounded"></textarea>
+                            <button onclick="uploadAcc()" class="w-full py-2 bg-green-600 text-white text-sm font-semibold rounded hover:bg-green-700">Tải Lên Kho</button>
+                        </div>
+                    </div>
+
+                    <!-- 🔔 FORM CÀI MỐC GIỜ BÁO TELEGRAM -->
+                    <div class="bg-white p-5 rounded-lg shadow border-t-4 border-purple-600">
+                        <h3 class="text-lg font-bold mb-2 text-gray-800">⏰ Cài Mốc Báo Telegram</h3>
+                        <p class="text-xs text-gray-500 mb-3">*Hệ thống tự trừ lùi 3 phút để báo trước khi đến mốc chuẩn (Hỗ trợ cả giờ chẵn/lẻ).</p>
+                        <div class="space-y-3">
+                            <input id="timerName" type="text" placeholder="Tên mốc (Ví dụ: Ca Sáng, Mốc 18h...)" class="w-full px-3 py-2 border text-sm rounded">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="targetHour" type="number" min="0" max="23" placeholder="Giờ chuẩn (0-23)" class="w-full px-3 py-2 border text-sm rounded">
+                                <input id="targetMin" type="number" min="0" max="59" placeholder="Phút chuẩn (0-59)" class="w-full px-3 py-2 border text-sm rounded">
+                            </div>
+                            <button onclick="addTimer()" class="w-full py-2 bg-purple-600 text-white text-sm font-semibold rounded hover:bg-purple-700">Lưu Mốc Báo</button>
+                        </div>
+                        
+                        <!-- Danh sách mốc giờ đã cài -->
+                        <div id="timerList" class="mt-4 space-y-2 max-h-40 overflow-y-auto pt-2 border-t"></div>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI: HIỂN THỊ KHO ACC & HÀNG ĐỢI GHI CHÚ -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- 📦 KHO TÀI KHOẢN HIỆN TẠI -->
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">📦 Kho Tài Khoản Hiện Tại</h3>
+                        <div id="accList" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                            <p class="text-gray-500 italic text-center text-sm">Đang tải dữ liệu...</p>
+                        </div>
+                    </div>
+
+                    <!-- ⏳ HÀNG ĐỢI LƯU TẠM (NOTE VÀ BỘ ĐẾM GIỜ) -->
+                    <div class="bg-yellow-50 p-5 rounded-lg shadow border border-yellow-200">
+                        <h3 class="text-lg font-bold mb-1 text-yellow-800 flex items-center gap-2">⏳ Hàng Đợi Ghi Chú (Tạm thời)</h3>
+                        <p class="text-xs text-yellow-700 mb-3">Tài khoản lưu giữ tạm để cập nhật trạng thái. Có bộ đếm thời gian xử lý thực tế.</p>
+                        <div id="tempQueueList" class="space-y-3">
+                            <p class="text-gray-400 italic text-center text-sm">Chưa có tài khoản nào trong hàng đợi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase Core & Realtime DB SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // CẤU HÌNH FIREBASE CỦA BẠN
+        // ================= CẤU HÌNH HỆ THỐNG (TÀI KHOẢN & TELEGRAM MỚI) =================
+        const ADMIN_USERNAME = "admin";
+        const ADMIN_PASSWORD = "password123";
+
+        // Đã cập nhật Token và ID Telegram mới của bạn
+        const TELEGRAM_TOKEN = "8503723223:AAF8FonAHhyHUz7vKmy-7K7sBPqYJUJlCwo";
+        const TELEGRAM_CHAT_ID = "-5310703259";
+
         const firebaseConfig = {
             databaseURL: "https://qli-kho-ec-default-rtdb.firebaseio.com/"
         };
+        // =======================================================================
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
-        // Mảng lưu trữ các mốc thời gian phục vụ bộ đếm chạy realtime
         let activeTimers = {};
 
-        // 1. THEO DÕI KHO ACC CHÍNH
-        db.ref('accounts').on('value', (snapshot) => {
-            const accListDiv = document.getElementById('accList');
-            accListDiv.innerHTML = '';
-            const data = snapshot.val();
+        // --- HÀM KIỂM TRA ĐĂNG NHẬP ONSITE ---
+        function checkLogin() {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+                initSystemListeners(); 
+            } else {
+                Swal.fire('Thất bại', 'Sai tài khoản hoặc mật khẩu admin!', 'error');
+            }
+        }
 
-            if (!data) {
-                accListDiv.innerHTML = `<p class="text-gray-500 italic text-center">Kho trống, vui lòng thêm tài khoản!</p>`;
-                return;
+        function logout() {
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
+
+        // --- UPLOAD ACC LÊN KHO ---
+        function uploadAcc() {
+            const type = document.getElementById('accType').value.trim() || 'Chưa phân loại';
+            const content = document.getElementById('accContent').value.trim();
+            if(!content) return Swal.fire('Lỗi', 'Vui lòng nhập nội dung tài khoản!', 'warning');
+
+            db.ref('accounts').push({
+                type: type,
+                content: content,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                document.getElementById('accContent').value = '';
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã thêm acc vào kho!', showConfirmButton: false, timer: 1500 });
+            });
+        }
+
+        // --- THÊM MỐC GIỜ VÀ TỰ ĐỘNG LÙI 3 PHÚT ---
+        function addTimer() {
+            const name = document.getElementById('timerName').value.trim();
+            const tHour = parseInt(document.getElementById('targetHour').value);
+            const tMin = parseInt(document.getElementById('targetMin').value);
+
+            if(!name || isNaN(tHour) || isNaN(tMin)) return Swal.fire('Lỗi', 'Vui lòng điền đủ thông tin mốc giờ!', 'warning');
+
+            let alertHour = tHour;
+            let alertMin = tMin - 3;
+            if (alertMin < 0) {
+                alertMin += 60;
+                alertHour = (alertHour - 1 + 24) % 24;
             }
 
-            Object.keys(data).forEach(key => {
-                const acc = data[key];
-                accListDiv.innerHTML += `
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 border rounded-lg gap-3">
-                        <div>
-                            <span class="font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold">${acc.type || 'Chưa phân loại'}</span>
-                            <p class="text-gray-700 font-medium mt-1 break-all">${acc.content}</p>
-                        </div>
-                        <button onclick="handleGetAcc('${key}', '${encodeURIComponent(acc.content)}', '${acc.type || ''}')" 
-                                class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
-                            🔑 Lấy Acc
-                        </button>
-                    </div>
-                `;
+            db.ref('timers').push({
+                name: name,
+                targetHour: tHour,
+                targetMin: tMin,
+                alertHour: alertHour,
+                alertMin: alertMin
+            }).then(() => {
+                document.getElementById('timerName').value = '';
+                document.getElementById('targetHour').value = '';
+                document.getElementById('targetMin').value = '';
+                Swal.fire('Thành công', 'Đã lưu mốc báo giờ.', 'success');
             });
-        });
+        }
 
-        // 2. THEO DÕI HÀNG ĐỢI LƯU TẠM (NOTE + TIMER)
-        db.ref('temp_queue').on('value', (snapshot) => {
-            const queueDiv = document.getElementById('tempQueueList');
-            queueDiv.innerHTML = '';
-            const data = snapshot.val();
+        // --- KHỞI TẠO BỘ LẮNG NGHE DỮ LIỆU ĐỒNG BỘ REALTIME ---
+        function initSystemListeners() {
+            // A. Hiển thị kho Acc
+            db.ref('accounts').on('value', (snapshot) => {
+                const listDiv = document.getElementById('accList');
+                listDiv.innerHTML = '';
+                const data = snapshot.val();
+                if(!data) { listDiv.innerHTML = `<p class="text-gray-500 italic text-center text-sm">Kho trống!</p>`; return;}
+                
+                Object.keys(data).forEach(key => {
+                    const acc = data[key];
+                    listDiv.innerHTML += `
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-gray-50 border rounded gap-2">
+                            <div class="max-w-[80%]"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded font-semibold font-mono">${acc.type}</span><p class="text-gray-700 text-sm mt-1 break-all">${acc.content}</p></div>
+                            <button onclick="handleGetAcc('${key}', '${encodeURIComponent(acc.content)}', '${acc.type}')" class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 whitespace-nowrap">🔑 Lấy Acc</button>
+                        </div>`;
+                });
+            });
 
-            if (!data) {
-                queueDiv.innerHTML = `<p class="text-gray-400 italic text-center text-sm">Chưa có tài khoản nào trong hàng đợi.</p>`;
-                // Xóa bỏ tất cả bộ đếm thời gian cũ nếu hàng đợi trống
-                Object.keys(activeTimers).forEach(k => clearInterval(activeTimers[k]));
-                activeTimers = {};
-                return;
-            }
+            // B. Hiển thị Hàng đợi ghi chú + Đếm giây Realtime
+            db.ref('temp_queue').on('value', (snapshot) => {
+                const queueDiv = document.getElementById('tempQueueList');
+                queueDiv.innerHTML = '';
+                const data = snapshot.val();
 
-            // Dọn dẹp các bộ đếm không còn tồn tại trong data mới
-            Object.keys(activeTimers).forEach(k => {
-                if (!data[k]) {
-                    clearInterval(activeTimers[k]);
-                    delete activeTimers[k];
+                if(!data) {
+                    queueDiv.innerHTML = `<p class="text-gray-400 italic text-center text-sm">Hàng đợi trống.</p>`;
+                    Object.keys(activeTimers).forEach(k => clearInterval(activeTimers[k]));
+                    activeTimers = {};
+                    return;
                 }
+
+                Object.keys(activeTimers).forEach(k => { if(!data[k]) { clearInterval(activeTimers[k]); delete activeTimers[k]; } });
+
+                Object.keys(data).forEach(key => {
+                    const item = data[key];
+                    const movedAt = item.movedAt || Date.now();
+
+                    queueDiv.innerHTML += `
+                        <div class="p-3 bg-white border border-yellow-300 rounded shadow-sm space-y-2 text-xs">
+                            <div class="flex justify-between items-start gap-2">
+                                <p class="text-gray-800 font-mono break-all bg-gray-100 p-2 rounded flex-1">${item.content}</p>
+                                <div class="flex flex-col items-end gap-1 font-semibold">
+                                    <span class="bg-yellow-200 text-yellow-800 px-1.5 rounded">${item.type}</span>
+                                    <span id="timer-${key}" class="bg-gray-800 text-green-400 px-1.5 py-0.5 rounded font-mono">⏱️ 00:00</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div><label class="text-gray-400">Ghi chú 1:</label><input id="note1-${key}" type="text" placeholder="Lý do lỗi..." value="${item.note || ''}" class="w-full border px-2 py-1 rounded"></div>
+                                <div><label class="text-gray-400">Ghi chú 2:</label><input id="note2-${key}" type="text" placeholder="Thông tin khách..." value="${item.note2 || ''}" class="w-full border px-2 py-1 rounded"></div>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-dashed">
+                                <div class="space-x-3"><button onclick="copyToClipboard('${encodeURIComponent(item.content)}')" class="text-blue-600 font-bold">📋 Copy lại</button><button onclick="saveNotes('${key}')" class="text-green-600 font-bold">💾 Lưu Note</button></div>
+                                <button onclick="deleteFromQueue('${key}')" class="text-red-600 font-bold">❌ Xóa hẳn</button>
+                            </div>
+                        </div>`;
+
+                    if (!activeTimers[key]) {
+                        activeTimers[key] = setInterval(() => {
+                            const diff = Date.now() - movedAt;
+                            const m = String(Math.floor(diff / 60000)).padStart(2, '0');
+                            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                            const el = document.getElementById(`timer-${key}`);
+                            if(el) el.innerText = `⏱️ ${m}:${s}`;
+                        }, 1000);
+                    }
+                });
             });
 
-            Object.keys(data).forEach(key => {
-                const item = data[key];
-                const movedAt = item.movedAt || Date.now();
-
-                queueDiv.innerHTML += `
-                    <div class="p-4 bg-white border border-yellow-300 rounded-lg shadow-sm space-y-3">
-                        <div class="flex justify-between items-start flex-wrap gap-2">
-                            <p class="text-gray-800 font-mono text-sm break-all font-semibold bg-gray-100 p-2 rounded flex-1 min-w-[200px]">${item.content}</p>
-                            <div class="flex flex-col items-end gap-1">
-                                <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded font-bold">${item.type || 'Acc'}</span>
-                                <!-- Vị trí hiển thị bộ đếm thời gian -->
-                                <span id="timer-${key}" class="text-xs bg-gray-800 text-green-400 font-mono px-2 py-0.5 rounded shadow">⏱️ 00:00</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Hệ thống 2 ô ghi chú -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-xs font-semibold text-gray-500">Mục ghi chú 1 (Lý do/Trạng thái):</label>
-                                <input id="note1-${key}" type="text" placeholder="Ví dụ: Acc lỗi, Sai pass..." value="${item.note || ''}" 
-                                       class="w-full mt-0.5 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500">
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold text-gray-500">Mục ghi chú 2 (Thông tin thêm):</label>
-                                <input id="note2-${key}" type="text" placeholder="Ví dụ: Đã đổi mail, Khách nguyễn văn a..." value="${item.note2 || ''}" 
-                                       class="w-full mt-0.5 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500">
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between items-center pt-2 border-t border-dashed border-gray-200">
-                            <div class="space-x-4 text-xs">
-                                <button onclick="copyToClipboard('${encodeURIComponent(item.content)}')" class="text-blue-600 font-medium hover:underline">📋 Copy lại</button>
-                                <button onclick="saveNotes('${key}')" class="text-green-600 font-bold hover:underline">💾 Lưu 2 Note</button>
-                            </div>
-                            <button onclick="deleteFromQueue('${key}')" class="text-red-600 font-bold text-xs hover:underline">❌ Xóa vĩnh viễn</button>
-                        </div>
-                    </div>
-                `;
-
-                // Khởi tạo bộ đếm thời gian Realtime chạy cho acc này
-                if (!activeTimers[key]) {
-                    activeTimers[key] = setInterval(() => {
-                        const now = Date.now();
-                        const diff = now - movedAt;
-
-                        const minutes = Math.floor(diff / 60000);
-                        const seconds = Math.floor((diff % 60000) / 1000);
-
-                        const strMinutes = String(minutes).padStart(2, '0');
-                        const strSeconds = String(seconds).padStart(2, '0');
-
-                        const timerEl = document.getElementById(`timer-${key}`);
-                        if (timerEl) {
-                            timerEl.innerText = `⏱️ ${strMinutes}:${strSeconds}`;
-                        }
-                    }, 1000);
-                }
+            // C. Hiển thị danh sách mốc giờ cài đặt báo Telegram
+            db.ref('timers').on('value', (snapshot) => {
+                const timerList = document.getElementById('timerList');
+                timerList.innerHTML = '';
+                const data = snapshot.val();
+                if(!data) return;
+                Object.keys(data).forEach(key => {
+                    const t = data[key];
+                    timerList.innerHTML += `
+                        <div class="flex justify-between items-center bg-purple-50 p-2 rounded text-xs border border-purple-200">
+                            <div><strong>${t.name}</strong> (${String(t.targetHour).padStart(2,'0')}:${String(t.targetMin).padStart(2,'0')}) <span class="text-purple-600 text-[10px] block">Báo Tele lúc: ${String(t.alertHour).padStart(2,'0')}:${String(t.alertMin).padStart(2,'0')}</span></div>
+                            <button onclick="deleteTimer('${key}')" class="text-red-500 font-bold hover:underline">Xóa</button>
+                        </div>`;
+                });
             });
-        });
 
-        // 3. XỬ LÝ NÚT LẤY ACC
+            // D. BỘ KIỂM TRA BÁO TELEGRAM TRÊN WEB (NẾU ĐANG MỞ TAB)
+            setInterval(checkAndSendTelegramAlertLocal, 60000);
+        }
+
+        // --- XỬ LÝ LẤY ACC THÔNG MINH ---
         function handleGetAcc(key, encodedContent, type) {
             const content = decodeURIComponent(encodedContent);
-
             Swal.fire({
                 title: '⚡ LỰA CHỌN XỬ LÝ ACC',
-                html: `<div class="text-left text-sm text-gray-600 bg-gray-100 p-3 rounded mb-4 break-all font-mono">${content}</div>`,
-                showDenyButton: true,
-                showCancelButton: true,
+                html: `<div class="text-left text-xs bg-gray-100 p-2 rounded break-all font-mono">${content}</div>`,
+                showDenyButton: true, showCancelButton: true,
                 confirmButtonText: '📋 Copy & Xóa Luôn',
                 denyButtonText: '💾 Copy & Lưu Tạm (Để Note)',
-                cancelButtonText: 'Hủy bỏ',
-                confirmButtonColor: '#e11d48',
-                denyButtonColor: '#d97706',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#e11d48', denyButtonColor: '#d97706'
             }).then((result) => {
                 if (result.isConfirmed) {
                     navigator.clipboard.writeText(content).then(() => {
-                        db.ref('accounts/' + key).remove().then(() => {
-                            Swal.fire('Thành công!', 'Đã copy và xóa khỏi kho chính.', 'success');
-                        });
+                        db.ref('accounts/' + key).remove().then(() => { Swal.fire('Thành công', 'Đã copy và xóa khỏi kho chính.', 'success'); });
                     });
                 } else if (result.isDenied) {
                     navigator.clipboard.writeText(content).then(() => {
                         db.ref('temp_queue').push({
-                            content: content,
-                            type: type,
-                            note: "",
-                            note2: "", // Thêm trường note thứ 2 lên Firebase
-                            movedAt: firebase.database.ServerValue.TIMESTAMP // Lưu mốc thời gian máy chủ để đếm giây
+                            content: content, type: type, note: "", note2: "",
+                            movedAt: firebase.database.ServerValue.TIMESTAMP
                         }).then(() => {
-                            db.ref('accounts/' + key).remove().then(() => {
-                                Swal.fire('Đã Lưu Tạm!', 'Đã chuyển xuống "Hàng Đợi Ghi Chú" để bạn theo dõi thời gian và điền note.', 'info');
-                            });
+                            db.ref('accounts/' + key).remove().then(() => { Swal.fire('Đã Lưu Tạm!', 'Tài khoản đã được chuyển xuống mục hàng đợi.', 'info'); });
                         });
                     });
                 }
             });
         }
 
-        // HÀM LƯU ĐỒNG THỜI CẢ 2 MỤC GHI CHÚ
+        // --- CÁC HÀM PHỤ TRỢ (LƯU NOTE, XÓA ACC TẠM, XÓA MỐC GIỜ, COPY) ---
         function saveNotes(key) {
-            const note1Value = document.getElementById(`note1-${key}`).value;
-            const note2Value = document.getElementById(`note2-${key}`).value;
-            
             db.ref('temp_queue/' + key).update({
-                note: note1Value,
-                note2: note2Value
-            }).then(() => {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Đã lưu cả 2 ghi chú!',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            });
+                note: document.getElementById(`note1-${key}`).value,
+                note2: document.getElementById(`note2-${key}`).value
+            }).then(() => { Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã lưu ghi chú!', showConfirmButton: false, timer: 1500 }); });
         }
 
-        // HÀM XÓA ACC KHỎI HÀNG ĐỢI
         function deleteFromQueue(key) {
-            Swal.fire({
-                title: 'Xóa vĩnh viễn?',
-                text: "Acc và mọi ghi chú đi kèm sẽ bị xóa hoàn toàn!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Đồng ý xóa'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Xóa bộ đếm trên trình duyệt trước
-                    if(activeTimers[key]) {
-                        clearInterval(activeTimers[key]);
-                        delete activeTimers[key];
-                    }
-                    db.ref('temp_queue/' + key).remove().then(() => {
-                        Swal.fire('Đã xóa!', 'Dữ liệu đã dọn dẹp sạch.', 'success');
-                    });
-                }
+            db.ref('temp_queue/' + key).remove().then(() => { Swal.fire('Đã xóa', 'Acc đã xóa hoàn toàn khỏi hàng đợi.', 'success'); });
+        }
+
+        function deleteTimer(key) {
+            db.ref('timers/' + key).remove();
+        }
+
+        function copyToClipboard(encodedContent) {
+            navigator.clipboard.writeText(decodeURIComponent(encodedContent)).then(() => {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã copy lại!', showConfirmButton: false, timer: 1000 });
             });
         }
 
-        // HÀM COPY PHỤ LỢI ÍCH
-        function copyToClipboard(encodedContent) {
-            const content = decodeURIComponent(encodedContent);
-            navigator.clipboard.writeText(content).then(() => {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Đã copy lại!',
-                    showConfirmButton: false,
-                    timer: 1000
+        // --- HÀM GỬI TELEGRAM PHÒNG HỜ KHI ĐANG TREO WEB TAB ---
+        let lastAlertedTime = "";
+        function checkAndSendTelegramAlertLocal() {
+            const now = new Date();
+            const curH = now.getHours();
+            const curM = now.getMinutes();
+            const timeStr = `${curH}:${curM}`;
+            if(timeStr === lastAlertedTime) return;
+
+            db.ref('timers').once('value', (snapshot) => {
+                const data = snapshot.val();
+                if(!data) return;
+                Object.keys(data).forEach(key => {
+                    const t = data[key];
+                    if(curH === t.alertHour && curM === t.alertMin) {
+                        lastAlertedTime = timeStr;
+                        const text = `⚠️ *HỆ THỐNG CẢNH BÁO MỐC GIỜ*\n🔔 Sắp đến mốc: *${t.name.toUpperCase()}*\n⏰ Giờ chuẩn: \`${String(t.targetHour).padStart(2,'0')}:${String(t.targetMin).padStart(2,'0')}\`\n📌 Trạng thái: Hệ thống báo trước 3 phút!`;
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: "Markdown" })
+                        });
+                    }
                 });
             });
         }
